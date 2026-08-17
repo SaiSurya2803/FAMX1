@@ -1,0 +1,50 @@
+/* ─── Graph Canvas ────────────────────────────────────────── */
+.graph-canvas {
+  width: 100%;
+  height: 100%;
+  cursor: grab;
+  background: radial-gradient(ellipse at 50% 50%,
+    var(--bg-elevated) 0%,
+    var(--bg-base) 100%);
+  display: block;
+  touch-action: none;
+  user-select: none;
+}
+
+/* Subtle dot grid background */
+.graph-canvas {
+  background-image:
+    radial-gradient(ellipse at 50% 50%, var(--bg-elevated) 0%, var(--bg-base) 100%),
+    radial-gradient(circle, var(--border-subtle) 1px, transparent 1px);
+  background-size: 100% 100%, 32px 32px;
+  background-position: 0 0, 0 0;
+}
+
+/* ─── Node animations ─────────────────────────────────────── */
+.graph-node {
+  transition: opacity 200ms ease;
+}
+.graph-node:hover { opacity: 1; }
+
+/* ME halo pulse */
+.me-halo-outer {
+  animation: halo-pulse 3s ease-in-out infinite;
+}
+.me-halo-inner {
+  animation: halo-pulse 3s ease-in-out infinite 0.5s;
+}
+
+@keyframes halo-pulse {
+  0%, 100% { opacity: 0.10; r: 44; }
+  50%       { opacity: 0.25; r: 48; }
+}
+
+/* ─── Edge animations ─────────────────────────────────────── */
+.graph-edge-path {
+  stroke-dashoffset: 0;
+}
+
+@keyframes edge-pulse-flow {
+  from { stroke-dashoffset: 20; }
+  to   { stroke-dashoffset: 0; }
+}

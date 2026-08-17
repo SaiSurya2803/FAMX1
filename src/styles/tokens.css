@@ -1,0 +1,173 @@
+/* ============================================================
+   FAMILYGRAPH — DESIGN SYSTEM TOKENS
+   The single source of truth for all visual decisions.
+   ============================================================ */
+
+:root {
+  /* ─── Typography ─────────────────────────────────────────── */
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-serif: 'Playfair Display', Georgia, serif;
+
+  --text-xs:   0.6875rem;  /* 11px */
+  --text-sm:   0.8125rem;  /* 13px */
+  --text-base: 0.9375rem;  /* 15px */
+  --text-md:   1.0625rem;  /* 17px */
+  --text-lg:   1.25rem;    /* 20px */
+  --text-xl:   1.5rem;     /* 24px */
+  --text-2xl:  2rem;       /* 32px */
+  --text-3xl:  2.75rem;    /* 44px */
+  --text-4xl:  3.75rem;    /* 60px */
+  --text-5xl:  5rem;       /* 80px */
+  --text-6xl:  7rem;       /* 112px */
+
+  --weight-light:   300;
+  --weight-regular: 400;
+  --weight-medium:  500;
+  --weight-semibold:600;
+  --weight-bold:    700;
+
+  --leading-tight:  1.1;
+  --leading-snug:   1.25;
+  --leading-normal: 1.5;
+  --leading-relaxed:1.75;
+
+  --tracking-tight:  -0.04em;
+  --tracking-snug:   -0.02em;
+  --tracking-normal: 0em;
+  --tracking-wide:   0.06em;
+  --tracking-wider:  0.12em;
+
+  /* ─── Spacing (4px base grid) ────────────────────────────── */
+  --space-1:  0.25rem;
+  --space-2:  0.5rem;
+  --space-3:  0.75rem;
+  --space-4:  1rem;
+  --space-5:  1.25rem;
+  --space-6:  1.5rem;
+  --space-8:  2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-20: 5rem;
+  --space-24: 6rem;
+  --space-32: 8rem;
+
+  /* ─── Borders & Radius ───────────────────────────────────── */
+  --radius-sm:   4px;
+  --radius-md:   8px;
+  --radius-lg:   12px;
+  --radius-xl:   18px;
+  --radius-2xl:  24px;
+  --radius-full: 9999px;
+
+  --border-hairline: 0.5px;
+  --border-thin:     1px;
+  --border-base:     1.5px;
+
+  /* ─── Motion ─────────────────────────────────────────────── */
+  --ease-out-expo:  cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out-circ:  cubic-bezier(0, 0.55, 0.45, 1);
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-in-out:    cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-spring:    cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  --dur-fast:      120ms;
+  --dur-medium:    250ms;
+  --dur-slow:      480ms;
+  --dur-cinematic: 900ms;
+
+  /* ─── Z-index scale ──────────────────────────────────────── */
+  --z-graph:     1;
+  --z-ui:        10;
+  --z-nav:       100;
+  --z-modal:     200;
+  --z-palette:   300;
+  --z-tooltip:   400;
+}
+
+/* ─── DARK THEME (default) ───────────────────────────────────── */
+[data-theme="dark"] {
+  /* Backgrounds */
+  --bg-base:        #0a0a0b;
+  --bg-surface:     #111113;
+  --bg-elevated:    #19191d;
+  --bg-overlay:     #222228;
+  --bg-hover:       #2a2a30;
+
+  /* Text */
+  --text-primary:   #f0ede8;
+  --text-secondary: #9d9a94;
+  --text-tertiary:  #5c5a56;
+  --text-inverse:   #0a0a0b;
+
+  /* Accent — warm amber/gold */
+  --accent:         #c8a96e;
+  --accent-muted:   rgba(200, 169, 110, 0.15);
+  --accent-bright:  #e8c87e;
+
+  /* Graph colors */
+  --graph-node-fill:    #1e1e24;
+  --graph-node-stroke:  #3a3a44;
+  --graph-node-me-fill: #1a1812;
+  --graph-node-me-stroke: #c8a96e;
+  --graph-edge:         rgba(255,255,255, 0.10);
+  --graph-edge-parent:  rgba(200, 169, 110, 0.35);
+  --graph-edge-spouse:  rgba(180, 120, 120, 0.35);
+  --graph-edge-sibling: rgba(120, 160, 200, 0.30);
+
+  /* Borders */
+  --border-subtle:  rgba(255,255,255, 0.06);
+  --border-muted:   rgba(255,255,255, 0.10);
+  --border-base-c:  rgba(255,255,255, 0.16);
+
+  /* Shadows */
+  --shadow-sm:  0 1px 2px rgba(0,0,0,0.4);
+  --shadow-md:  0 4px 16px rgba(0,0,0,0.5);
+  --shadow-lg:  0 12px 40px rgba(0,0,0,0.65);
+  --shadow-xl:  0 24px 64px rgba(0,0,0,0.8);
+  --shadow-glow-accent: 0 0 24px rgba(200, 169, 110, 0.20);
+  --shadow-glow-me:     0 0 40px rgba(200, 169, 110, 0.18);
+
+  /* Scrim */
+  --scrim: rgba(0,0,0,0.72);
+}
+
+/* ─── LIGHT THEME ─────────────────────────────────────────────── */
+[data-theme="light"] {
+  --bg-base:        #fafaf8;
+  --bg-surface:     #ffffff;
+  --bg-elevated:    #f4f3f0;
+  --bg-overlay:     #eeede9;
+  --bg-hover:       #e8e7e3;
+
+  --text-primary:   #1a1916;
+  --text-secondary: #6b6860;
+  --text-tertiary:  #a8a49c;
+  --text-inverse:   #fafaf8;
+
+  --accent:         #9a7040;
+  --accent-muted:   rgba(154, 112, 64, 0.12);
+  --accent-bright:  #b88840;
+
+  --graph-node-fill:     #ffffff;
+  --graph-node-stroke:   #d8d5cf;
+  --graph-node-me-fill:  #fdf9f1;
+  --graph-node-me-stroke:#9a7040;
+  --graph-edge:          rgba(0,0,0, 0.10);
+  --graph-edge-parent:   rgba(154, 112, 64, 0.35);
+  --graph-edge-spouse:   rgba(180, 80, 80, 0.30);
+  --graph-edge-sibling:  rgba(60, 120, 180, 0.25);
+
+  --border-subtle:  rgba(0,0,0, 0.05);
+  --border-muted:   rgba(0,0,0, 0.09);
+  --border-base-c:  rgba(0,0,0, 0.14);
+
+  --shadow-sm:  0 1px 2px rgba(0,0,0,0.06);
+  --shadow-md:  0 4px 16px rgba(0,0,0,0.08);
+  --shadow-lg:  0 12px 40px rgba(0,0,0,0.12);
+  --shadow-xl:  0 24px 64px rgba(0,0,0,0.16);
+  --shadow-glow-accent: 0 0 24px rgba(154, 112, 64, 0.15);
+  --shadow-glow-me:     0 0 40px rgba(154, 112, 64, 0.12);
+
+  --scrim: rgba(250,250,248, 0.80);
+}
