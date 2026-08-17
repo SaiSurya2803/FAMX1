@@ -59,29 +59,21 @@ export const KINSHIP_CATALOG = [
   { id: 'half_sibling',          type: RELATIONSHIP_TYPES.HALF_SIBLING,label: 'Half-sibling',                     emoji: '🧒' },
 ];
 
-/**
- * Transitive & Kinship Inference Engine:
- * Analyzes existing relationships and automatically infers missing edges symmetrically for both Father & Mother sides.
- */
 function inferTransitiveEdges(edges) {
   if (!Array.isArray(edges)) return [];
 
-  // Filter out shortcut edges and convert legacy CHILD edges to canonical PARENT edges
+  // Normalize legacy CHILD, GRANDCHILD, STEP_CHILD edges to canonical direction
   const normalizedEdges = [];
   edges.forEach((e) => {
     if (!e || !e.from || !e.to || e.from === e.to) return;
     const t = e.type;
-    if (
-      t === RELATIONSHIP_TYPES.GRANDPARENT ||
-      t === RELATIONSHIP_TYPES.UNCLE_AUNT ||
-      t === RELATIONSHIP_TYPES.IN_LAW ||
-      t === RELATIONSHIP_TYPES.COUSIN
-    ) {
-      return;
-    }
 
     if (t === RELATIONSHIP_TYPES.CHILD) {
       normalizedEdges.push({ id: e.id || crypto.randomUUID(), from: e.to, to: e.from, type: RELATIONSHIP_TYPES.PARENT });
+    } else if (t === RELATIONSHIP_TYPES.GRANDCHILD) {
+      normalizedEdges.push({ id: e.id || crypto.randomUUID(), from: e.to, to: e.from, type: RELATIONSHIP_TYPES.GRANDPARENT });
+    } else if (t === RELATIONSHIP_TYPES.STEP_CHILD) {
+      normalizedEdges.push({ id: e.id || crypto.randomUUID(), from: e.to, to: e.from, type: RELATIONSHIP_TYPES.STEP_PARENT });
     } else {
       normalizedEdges.push({ id: e.id || crypto.randomUUID(), from: e.from, to: e.to, type: t });
     }
@@ -141,8 +133,8 @@ function inferTransitiveEdges(edges) {
       const s2 = e1.to;
       newEdges.forEach((e2) => {
         if (e2.type === RELATIONSHIP_TYPES.PARENT) {
-          if (e2.to === s1) addInferred(e2.from, s2, RELATIONSHIP_TYPES.PARENT, 'Parent');
-          if (e2.to === s2) addInferred(e2.from, s1, RELATIONSHIP_TYPES.PARENT, 'Parent');
+          if (e2.to === s1) addInferred(e2.from, s2, RELATIONSHIP_TYPES.PARENT);
+          if (e2.to === s2) addInferred(e2.from, s1, RELATIONSHIP_TYPES.PARENT);
         }
       });
     }
@@ -491,6 +483,14 @@ export const useFamilyStore = create(
           edgeFrom = to;
           edgeTo = from;
           edgeType = RELATIONSHIP_TYPES.PARENT;
+        } else if (type === RELATIONSHIP_TYPES.GRANDCHILD) {
+          edgeFrom = to;
+          edgeTo = from;
+          edgeType = RELATIONSHIP_TYPES.GRANDPARENT;
+        } else if (type === RELATIONSHIP_TYPES.STEP_CHILD) {
+          edgeFrom = to;
+          edgeTo = from;
+          edgeType = RELATIONSHIP_TYPES.STEP_PARENT;
         }
 
         const existing = edges.find(
@@ -498,6 +498,18 @@ export const useFamilyStore = create(
         );
 
         if (existing) {
+          // If existing edge already has the exact same type and direction, return existing id
+          if (existing.type === edgeType && existing.from === edgeFrom && existing.to === edgeTo) {
+            return existing.id;
+          }
+          // For symmetric edges (SPOUSE, SIBLING), direction does not matter
+          if (
+            (edgeType === RELATIONSHIP_TYPES.SPOUSE && existing.type === RELATIONSHIP_TYPES.SPOUSE) ||
+            (edgeType === RELATIONSHIP_TYPES.SIBLING && existing.type === RELATIONSHIP_TYPES.SIBLING)
+          ) {
+            return existing.id;
+          }
+          // Otherwise update edge type
           const updatedEdges = edges.map((e) =>
             e.id === existing.id ? { id: e.id, from: edgeFrom, to: edgeTo, type: edgeType } : e
           );

@@ -47,6 +47,21 @@ export function autoCorrectTextHeuristic(rawText) {
   return cleaned;
 }
 
+const normalizeEdgeType = (rawType) => {
+  if (!rawType) return 'parent';
+  const lower = String(rawType).trim().toLowerCase();
+  if (lower.includes('parent') || lower.includes('father') || lower.includes('mother')) return 'parent';
+  if (lower.includes('child') || lower.includes('son') || lower.includes('daughter')) return 'child';
+  if (lower.includes('spouse') || lower.includes('husband') || lower.includes('wife') || lower.includes('married')) return 'spouse';
+  if (lower.includes('sibling') || lower.includes('brother') || lower.includes('sister')) return 'sibling';
+  if (lower.includes('grandparent') || lower.includes('grandfather') || lower.includes('grandmother')) return 'grandparent';
+  if (lower.includes('grandchild') || lower.includes('grandson') || lower.includes('granddaughter')) return 'grandchild';
+  if (lower.includes('uncle') || lower.includes('aunt')) return 'uncle_aunt';
+  if (lower.includes('cousin')) return 'cousin';
+  if (lower.includes('in_law') || lower.includes('in law')) return 'in_law';
+  return lower;
+};
+
 const sanitizeLlmResult = (res) => {
   if (!res) return { correctedText: '', people: [], edges: [] };
   const people = (res.people || [])
@@ -57,11 +72,12 @@ const sanitizeLlmResult = (res) => {
     .filter((p) => p.name && p.name.length >= 2);
 
   const edges = (res.edges || [])
-    .map((e) => ({
-      fromName: sanitizePersonName(e.fromName || e.from),
-      toName: sanitizePersonName(e.toName || e.to),
-      type: e.type,
-    }))
+    .map((e) => {
+      const fromName = sanitizePersonName(e.fromName || e.from);
+      const toName = sanitizePersonName(e.toName || e.to);
+      let type = normalizeEdgeType(e.type);
+      return { fromName, toName, type };
+    })
     .filter((e) => e.fromName && e.toName && e.fromName.toLowerCase() !== e.toName.toLowerCase());
 
   return {

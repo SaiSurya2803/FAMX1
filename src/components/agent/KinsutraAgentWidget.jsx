@@ -197,14 +197,20 @@ export function KinsutraAgentWidget() {
 
     if (wChildren.trim()) {
       const kids = wChildren.split(/[,&]+/).map((k) => k.trim()).filter(Boolean);
+      const parentRel = wGender === 'female' ? 'mother' : 'father';
       kids.forEach((k) => {
-        textPayload += `${wName} is father of ${k}.\n`;
+        textPayload += `${wName} is ${parentRel} of ${k}.\n`;
+        if (wSpouse.trim()) {
+          const spouseRel = wGender === 'female' ? 'father' : 'mother';
+          textPayload += `${wSpouse} is ${spouseRel} of ${k}.\n`;
+        }
       });
     }
 
     if (wSiblings.trim()) {
       const sibs = wSiblings.split(/[,&]+/).map((s) => s.trim()).filter(Boolean);
       sibs.forEach((s) => {
+        textPayload += `${wName} and ${s} are siblings.\n`;
         if (wFather.trim()) textPayload += `${wFather} is father of ${s}.\n`;
         if (wMother.trim()) textPayload += `${wMother} is mother of ${s}.\n`;
       });
