@@ -1,4 +1,5 @@
 import './GraphHighlightToolbar.css';
+import { useFamilyStore } from '../../store/familyStore';
 
 export function GraphHighlightToolbar({
   viewMode,

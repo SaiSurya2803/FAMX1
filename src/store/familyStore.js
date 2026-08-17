@@ -654,6 +654,11 @@ export const useFamilyStore = create(
     {
       name: 'familygraph-store',
       version: 9,
+      migrate: (persistedState, version) => {
+        // v8 → v9: sanitizePersonName is handled by onRehydrateStorage
+        // Just pass state through; rehydration purger cleans everything
+        return persistedState;
+      },
       onRehydrateStorage: () => (state) => {
         if (state && state.people) {
           const canonicalPeople = {};
