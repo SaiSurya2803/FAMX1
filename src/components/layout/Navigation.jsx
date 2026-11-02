@@ -117,9 +117,18 @@ export function Navigation({ onSearch, onToggleTheme }) {
               <button onClick={() => scrollToSection('.lhero-outer')} className="nav__link nav__link--btn">Home</button>
               <button onClick={() => scrollToSection('.lfeat')} className="nav__link nav__link--btn">Features</button>
               <button onClick={() => scrollToSection('.lband')} className="nav__link nav__link--btn">Network</button>
-              {isOnboarded && (
-                <Link to="/app" className="nav__link">My Graph</Link>
-              )}
+              <Link
+                to="/app"
+                className="nav__link"
+                onClick={() => {
+                  soundFX.playPop();
+                  if (!isOnboarded) {
+                    loadShowcaseFamily();
+                  }
+                }}
+              >
+                Family Graph
+              </Link>
             </>
           )}
         </nav>
@@ -291,9 +300,15 @@ export function Navigation({ onSearch, onToggleTheme }) {
           ) : (
             <button
               className="nav__cta-btn"
-              onClick={() => navigate(isOnboarded ? '/app' : '/onboarding')}
+              onClick={() => {
+                soundFX.playPop();
+                if (!isOnboarded) {
+                  loadShowcaseFamily();
+                }
+                navigate('/app');
+              }}
             >
-              {isOnboarded ? 'Open App →' : 'Get Started →'}
+              Open Studio →
             </button>
           )}
 

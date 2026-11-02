@@ -15,11 +15,6 @@
   transition: background-color var(--dur-slow) ease, border-color var(--dur-slow) ease;
 }
 
-[data-theme="light"] .nav {
-  background: rgba(253, 252, 249, 0.92);
-  border-bottom: 3.5px solid #8b5523;
-}
-
 .nav__inner {
   display: flex;
   align-items: center;

@@ -52,16 +52,24 @@ export function GraphCanvas({
   // ── Graph data ────────────────────────────────────────────
   const { nodes, edges } = useGraphLayout();
 
-  // ── Centre on ME on mount ─────────────────────────────────
+  // ── Centre on ME or first node on mount ───────────────────
   useEffect(() => {
-    if (!meId || nodes.length === 0) return;
-    const me = nodes.find((n) => n.id === meId);
-    if (!me || !svgRef.current) return;
-    const { width, height } = svgRef.current.getBoundingClientRect();
-    const nc = { x: width / 2 - me.x, y: height / 2 - me.y, scale: 1 };
-    updateCamera(nc);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [meId, nodes.length === 0]);
+    if (nodes.length === 0) return;
+    const target = nodes.find((n) => n.id === meId) || nodes[0];
+    if (!target) return;
+
+    const doCenter = () => {
+      const rect = svgRef.current?.getBoundingClientRect();
+      const w = rect?.width || window.innerWidth;
+      const h = rect?.height || (window.innerHeight - 72);
+      const nc = { x: w / 2 - target.x, y: h / 2 - target.y, scale: 0.95 };
+      updateCamera(nc);
+    };
+
+    doCenter();
+    const timer = setTimeout(doCenter, 80);
+    return () => clearTimeout(timer);
+  }, [meId, nodes.length, updateCamera]);
 
   // ── Focus on node (smooth GSAP) ───────────────────────────
   const focusNode = useCallback((nodeId) => {
@@ -269,7 +277,18 @@ export function GraphCanvas({
   const transform = `translate(${camera.x},${camera.y}) scale(${camera.scale})`;
 
   // ── Filter nodes and edges by Generation Time Scrubber ─────
-  const visibleNodes = nodes.filter((n) => (n.gen ?? 1) <= generationFilter);
+  const maxGen = useMemo(() => {
+    return nodes.reduce((max, n) => Math.max(max, n.gen || 1), 1);
+  }, [nodes]);
+
+  const visibleNodes = useMemo(() => {
+    if (viewMode !== 'generations') {
+      return nodes;
+    }
+    const limit = (generationFilter && generationFilter > 0) ? generationFilter : maxGen;
+    return nodes.filter((n) => (n.gen ?? 1) <= limit);
+  }, [nodes, viewMode, generationFilter, maxGen]);
+
   const visibleNodeIds = new Set(visibleNodes.map((n) => n.id));
   const visibleEdges = edges.filter(
     (e) => visibleNodeIds.has(e.from) && visibleNodeIds.has(e.to) && people[e.from] && people[e.to]

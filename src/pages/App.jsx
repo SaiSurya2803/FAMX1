@@ -21,18 +21,32 @@ export function AppPage() {
   const people = useFamilyStore((s) => s.people);
   const getPersonCount = useFamilyStore((s) => s.getPersonCount);
   const getGenerationCount = useFamilyStore((s) => s.getGenerationCount);
+  const loadShowcaseFamily = useFamilyStore((s) => s.loadShowcaseFamily);
 
   const me = meId ? people[meId] : null;
   const firstName = me?.name?.split(' ')[0] || '';
   const count = getPersonCount();
   const gens = getGenerationCount();
 
+  // If there are zero people in graph, auto-load showcase dynasty immediately
+  useEffect(() => {
+    if (count === 0) {
+      loadShowcaseFamily();
+    }
+  }, [count, loadShowcaseFamily]);
+
   const [selectedId, setSelectedId] = useState(null);
   const [addRelativeFor, setAddRelativeFor] = useState(null);
   const [editRelationsFor, setEditRelationsFor] = useState(null);
-  const [showWelcome, setShowWelcome] = useState(count <= 1);
+  const [showWelcome, setShowWelcome] = useState(false);
   const [viewMode, setViewMode] = useState('network'); // 'network' | 'lineage' | 'generations'
-  const [generationFilter, setGenerationFilter] = useState(gens || 5);
+  const [generationFilter, setGenerationFilter] = useState(Math.max(gens, 5));
+
+  useEffect(() => {
+    if (gens > 0) {
+      setGenerationFilter((prev) => Math.max(prev, gens));
+    }
+  }, [gens]);
 
   const handleSelectNode = useCallback((id) => {
     setSelectedId(id);

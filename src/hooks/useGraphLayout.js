@@ -13,7 +13,15 @@ export function useGraphLayout() {
   const layoutVersion = useFamilyStore((s) => s.layoutVersion);
 
   const layout = useMemo(() => {
-    if (!meId || !people[meId]) return { nodes: [], edges: [] };
+    const peopleKeys = Object.keys(people);
+    if (peopleKeys.length === 0) return { nodes: [], edges: [] };
+
+    // Determine effective meId with robust fallbacks
+    const effectiveMeId = (meId && people[meId])
+      ? meId
+      : (peopleKeys.find((id) => people[id]?.isMe) || peopleKeys[0]);
+
+    if (!effectiveMeId || !people[effectiveMeId]) return { nodes: [], edges: [] };
 
     // ── 1. Determine Generation Tier for each Person ────────────
     const genMap = {};     // person_id -> integer tier (0 = top root ancestors, 1 = children, 2 = grandchildren...)
@@ -51,8 +59,8 @@ export function useGraphLayout() {
         queue.push(rId);
       });
     } else {
-      genMap[meId] = 0;
-      queue.push(meId);
+      genMap[effectiveMeId] = 0;
+      queue.push(effectiveMeId);
     }
 
     while (queue.length) {
@@ -151,7 +159,7 @@ export function useGraphLayout() {
     });
 
     // ── 3. Re-Center graph relative to ME node ───────────────────
-    const meComp = computed[meId] || { x: 0, y: 0 };
+    const meComp = computed[effectiveMeId] || { x: 0, y: 0 };
     Object.keys(computed).forEach((id) => {
       computed[id] = {
         x: computed[id].x - meComp.x,

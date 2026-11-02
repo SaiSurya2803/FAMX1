@@ -441,11 +441,14 @@ export default function Landing() {
                 className="lhero-btn shimmer-btn"
                 onClick={() => {
                   soundFX.playPop();
-                  navigate(targetPath);
+                  if (!isOnboarded) {
+                    loadShowcaseFamily();
+                  }
+                  navigate('/app');
                 }}
                 id="hero-start-btn"
               >
-                {isOnboarded ? 'Open Family Studio →' : 'Launch Studio Free →'}
+                Launch Studio Free →
               </button>
 
               <button
@@ -842,7 +845,11 @@ export default function Landing() {
               </ul>
               <button
                 className="lpricing-btn"
-                onClick={() => navigate('/onboarding')}
+                onClick={() => {
+                  soundFX.playPop();
+                  if (!isOnboarded) loadShowcaseFamily();
+                  navigate('/app');
+                }}
               >
                 Get Started Free
               </button>
@@ -963,10 +970,14 @@ export default function Landing() {
           <div style={{ display: 'flex', gap: 16, justifyContent: 'center', flexWrap: 'wrap' }}>
             <button
               className="lcta-btn shimmer-btn"
-              onClick={() => navigate(targetPath)}
+              onClick={() => {
+                soundFX.playPop();
+                if (!isOnboarded) loadShowcaseFamily();
+                navigate('/app');
+              }}
               id="final-cta-btn"
             >
-              {isOnboarded ? 'Open Family Studio →' : 'Create Your Family Graph'}
+              Open Family Studio →
             </button>
 
             <button

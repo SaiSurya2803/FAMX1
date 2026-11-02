@@ -14,16 +14,24 @@ import { Groups } from './pages/Groups';
 import './styles/tokens.css';
 import './styles/base.css';
 
-// Apply theme immediately before React hydrates (avoids flash)
-const savedTheme = JSON.parse(localStorage.getItem('familygraph-store') || '{}')?.state?.theme || 'light';
-document.documentElement.setAttribute('data-theme', savedTheme);
+// Apply Classroom Blackboard theme immediately before React hydrates
+document.documentElement.setAttribute('data-theme', 'dark');
 
 gsap.registerPlugin(ScrollTrigger);
 
-/* ─── Protected route ─────────────────────────────────────── */
+/* ─── Route Access ─────────────────────────────────────────── */
 function Protected({ children }) {
   const isOnboarded = useFamilyStore((s) => s.isOnboarded);
-  return isOnboarded ? children : <Navigate to="/onboarding" replace />;
+  const people = useFamilyStore((s) => s.people);
+  const hasPeople = Object.keys(people).length > 0;
+
+  useEffect(() => {
+    if (!isOnboarded && !hasPeople) {
+      useFamilyStore.getState().loadShowcaseFamily();
+    }
+  }, [isOnboarded, hasPeople]);
+
+  return children;
 }
 
 /* ─── Root App ─────────────────────────────────────────────── */

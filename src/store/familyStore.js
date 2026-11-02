@@ -155,7 +155,7 @@ export const useFamilyStore = create(
       /* App state */
       isOnboarded: false,
       meId: null,
-      theme: 'light',
+      theme: 'dark',
 
       /* Multi-Family Networks Management */
       activeFamilyId: 'default-fam',
@@ -1054,6 +1054,9 @@ export const useFamilyStore = create(
           }
 
           state.people = cleanPeopleMap;
+        }
+        if (state) {
+          state.theme = 'dark';
         }
       },
     }
