@@ -6,6 +6,7 @@ import { AddRelativeModal } from '../components/modals/AddRelativeModal';
 import { RelationEditorModal } from '../components/modals/RelationEditorModal';
 import { GraphHighlightToolbar } from '../components/graph/GraphHighlightToolbar';
 import { KinsutraAgentWidget } from '../components/agent/KinsutraAgentWidget';
+import { soundFX } from '../utils/soundEffects';
 import './App.css';
 
 function getGreeting() {
@@ -90,9 +91,32 @@ export function AppPage() {
         </div>
 
         <div className="app-topbar__actions">
+          {count <= 1 && (
+            <button
+              className="app-topbar__btn shimmer-btn"
+              onClick={() => {
+                soundFX.playSuccess();
+                useFamilyStore.getState().loadShowcaseFamily();
+                setShowWelcome(false);
+              }}
+              style={{
+                background: 'var(--accent-muted)',
+                color: 'var(--accent)',
+                borderColor: 'rgba(200, 169, 110, 0.4)',
+                fontWeight: 600,
+              }}
+              title="Load full 17-member multi-generation demo network"
+            >
+              ⚡ Load Showcase Dynasty
+            </button>
+          )}
+
           <button
-            className="app-topbar__btn app-topbar__btn--primary"
-            onClick={() => handleAddRelative(meId)}
+            className="app-topbar__btn app-topbar__btn--primary shimmer-btn"
+            onClick={() => {
+              soundFX.playPop();
+              handleAddRelative(meId);
+            }}
             id="add-relative-main-btn"
             aria-label="Add a relative"
           >
@@ -130,16 +154,33 @@ export function AppPage() {
         {showWelcome && count === 1 && (
           <div className="app-hint">
             <div className="app-hint__inner">
+              <div className="live-pulse-dot" style={{ margin: '0 auto 12px' }} />
               <p className="app-hint__title">You're the centre</p>
               <p className="app-hint__sub">
-                Click <strong>Add relative</strong> or double-click your node to begin building your family.
+                Click <strong>Add relative</strong> to add your family, or explore our full 17-member interactive showcase with 4 generations.
               </p>
-              <button
-                className="app-hint__btn"
-                onClick={() => handleAddRelative(meId)}
-              >
-                Add your first relative →
-              </button>
+              <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap', marginTop: 16 }}>
+                <button
+                  className="app-hint__btn shimmer-btn"
+                  onClick={() => {
+                    soundFX.playPop();
+                    handleAddRelative(meId);
+                  }}
+                >
+                  Add relative →
+                </button>
+                <button
+                  className="app-hint__btn shimmer-btn"
+                  style={{ background: 'var(--accent)', color: '#fff', border: 'none' }}
+                  onClick={() => {
+                    soundFX.playSuccess();
+                    useFamilyStore.getState().loadShowcaseFamily();
+                    setShowWelcome(false);
+                  }}
+                >
+                  ⚡ Load 100M Showcase Family
+                </button>
+              </div>
             </div>
           </div>
         )}

@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useFamilyStore, RELATIONSHIP_TYPES, KINSHIP_CATALOG } from '../../store/familyStore';
+import { soundFX } from '../../utils/soundEffects';
 import './AddRelativeModal.css';
 
 /**
@@ -33,12 +34,23 @@ function buildEdge(relType, anchorId, targetId) {
 }
 
 export function AddRelativeModal({ anchorId, onClose, onAdded }) {
+  const people    = useFamilyStore((s) => s.people);
+  const addPerson = useFamilyStore((s) => s.addPerson);
+  const addEdge   = useFamilyStore((s) => s.addEdge);
+
   const [selectedKin, setSelectedKin] = useState(KINSHIP_CATALOG[0]);
+  const [memberNo, setMemberNo]       = useState(() => String(Object.keys(people).length + 1).padStart(2, '0'));
   const [name, setName]               = useState('');
   const [birthDate, setBirthDate]     = useState('');
   const [birthPlace, setBirthPlace]   = useState('');
   const [gender, setGender]           = useState('unknown');
+  const [isDeceased, setIsDeceased]   = useState(false);
+  const [deathDate, setDeathDate]     = useState('');
+  const [phone, setPhone]             = useState('');
   const [whatsapp, setWhatsapp]       = useState('');
+  const [instagram, setInstagram]     = useState('');
+  const [facebook, setFacebook]       = useState('');
+  const [snapchat, setSnapchat]       = useState('');
   const [email, setEmail]             = useState('');
   const [photo, setPhoto]             = useState(null);
   const [step, setStep]               = useState(1);
@@ -46,10 +58,6 @@ export function AddRelativeModal({ anchorId, onClose, onAdded }) {
 
   const inputRef = useRef(null);
   const fileRef  = useRef(null);
-
-  const people    = useFamilyStore((s) => s.people);
-  const addPerson = useFamilyStore((s) => s.addPerson);
-  const addEdge   = useFamilyStore((s) => s.addEdge);
 
   const anchor = people[anchorId];
 
@@ -69,7 +77,10 @@ export function AddRelativeModal({ anchorId, onClose, onAdded }) {
     const file = e.target.files?.[0];
     if (!file) return;
     const reader = new FileReader();
-    reader.onload = (ev) => setPhoto(ev.target.result);
+    reader.onload = (ev) => {
+      soundFX.playPop();
+      setPhoto(ev.target.result);
+    };
     reader.readAsDataURL(file);
   };
 
@@ -83,12 +94,28 @@ export function AddRelativeModal({ anchorId, onClose, onAdded }) {
       if (matchingExisting) {
         targetId = matchingExisting.id;
       } else {
-        targetId = addPerson({ name: name.trim(), birthDate, birthPlace, gender, whatsapp, email, photo });
+        targetId = addPerson({
+          memberNo: memberNo.trim() || String(Object.keys(people).length + 1).padStart(2, '0'),
+          name: name.trim(),
+          birthDate,
+          birthPlace,
+          gender,
+          isDeceased,
+          deathDate: isDeceased ? deathDate : '',
+          phone: phone.trim() || whatsapp.trim(),
+          whatsapp: whatsapp.trim() || phone.trim(),
+          instagram: instagram.trim(),
+          facebook: facebook.trim(),
+          snapchat: snapchat.trim(),
+          email: email.trim(),
+          photo,
+        });
       }
     }
 
     const { from, to, type } = buildEdge(selectedKin.type, anchorId, targetId);
     addEdge(from, to, type);
+    soundFX.playSuccess();
 
     onAdded(targetId);
     onClose();
@@ -212,29 +239,43 @@ export function AddRelativeModal({ anchorId, onClose, onAdded }) {
                   </button>
                 </div>
 
-                <div className="add-modal__field">
-                  <label className="add-modal__field-label" htmlFor="add-name">Full Name *</label>
-                  <input
-                    id="add-name"
-                    ref={inputRef}
-                    className="add-modal__input"
-                    type="text"
-                    placeholder="e.g. Sujatha"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    required
-                    autoComplete="off"
-                  />
-                  {matchingExisting && (
-                    <p className="add-modal__suggestion">
-                      💡 <strong>{matchingExisting.name}</strong> already exists in your graph! Submitting will link directly to them without duplicating.
-                    </p>
-                  )}
+                <div className="add-modal__row">
+                  <div className="add-modal__field" style={{ flex: 2 }}>
+                    <label className="add-modal__field-label" htmlFor="add-name">Full Name *</label>
+                    <input
+                      id="add-name"
+                      ref={inputRef}
+                      className="add-modal__input"
+                      type="text"
+                      placeholder="e.g. Sujatha"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      required
+                      autoComplete="off"
+                    />
+                  </div>
+                  <div className="add-modal__field" style={{ flex: 1 }}>
+                    <label className="add-modal__field-label" htmlFor="add-memberNo">Member No.</label>
+                    <input
+                      id="add-memberNo"
+                      className="add-modal__input"
+                      type="text"
+                      placeholder="e.g. 05"
+                      value={memberNo}
+                      onChange={(e) => setMemberNo(e.target.value)}
+                    />
+                  </div>
                 </div>
+
+                {matchingExisting && (
+                  <p className="add-modal__suggestion">
+                    💡 <strong>{matchingExisting.name}</strong> already exists in your graph! Submitting will link directly to them without duplicating.
+                  </p>
+                )}
 
                 <div className="add-modal__row">
                   <div className="add-modal__field">
-                    <label className="add-modal__field-label" htmlFor="add-birth">Date of Birth</label>
+                    <label className="add-modal__field-label" htmlFor="add-birth">Date of Birth (DOB)</label>
                     <input id="add-birth" className="add-modal__input" type="date"
                       value={birthDate} onChange={(e) => setBirthDate(e.target.value)} />
                   </div>
@@ -250,22 +291,74 @@ export function AddRelativeModal({ anchorId, onClose, onAdded }) {
                   </div>
                 </div>
 
-                <div className="add-modal__field">
-                  <label className="add-modal__field-label" htmlFor="add-place">Birthplace</label>
-                  <input id="add-place" className="add-modal__input" type="text"
-                    placeholder="City, Country" value={birthPlace}
-                    onChange={(e) => setBirthPlace(e.target.value)} />
+                {/* Deceased Status & Passing Date */}
+                <div className="add-modal__deceased-box">
+                  <label className="add-modal__checkbox-label">
+                    <input
+                      type="checkbox"
+                      checked={isDeceased}
+                      onChange={(e) => setIsDeceased(e.target.checked)}
+                    />
+                    <span>Relative is deceased (Rest In Peace 🕯️)</span>
+                  </label>
+                  {isDeceased && (
+                    <div className="add-modal__field" style={{ marginTop: 8 }}>
+                      <label className="add-modal__field-label" htmlFor="add-death">Date of Passing (Death Date)</label>
+                      <input id="add-death" className="add-modal__input" type="date"
+                        value={deathDate} onChange={(e) => setDeathDate(e.target.value)} />
+                    </div>
+                  )}
+                </div>
+
+                {/* Direct Contact Numbers */}
+                <div className="add-modal__row">
+                  <div className="add-modal__field">
+                    <label className="add-modal__field-label" htmlFor="add-phone">Phone Number 📞</label>
+                    <input id="add-phone" className="add-modal__input" type="tel"
+                      placeholder="+91 98765 43210" value={phone}
+                      onChange={(e) => setPhone(e.target.value)} />
+                  </div>
+                  <div className="add-modal__field">
+                    <label className="add-modal__field-label" htmlFor="add-wa">WhatsApp Number 💬</label>
+                    <input id="add-wa" className="add-modal__input" type="tel"
+                      placeholder="+91 98765 43210" value={whatsapp}
+                      onChange={(e) => setWhatsapp(e.target.value)} />
+                  </div>
+                </div>
+
+                {/* Social Profile Handles */}
+                <div className="add-modal__row">
+                  <div className="add-modal__field">
+                    <label className="add-modal__field-label" htmlFor="add-ig">Instagram (@username) 📸</label>
+                    <input id="add-ig" className="add-modal__input" type="text"
+                      placeholder="@username" value={instagram}
+                      onChange={(e) => setInstagram(e.target.value)} />
+                  </div>
+                  <div className="add-modal__field">
+                    <label className="add-modal__field-label" htmlFor="add-fb">Facebook Profile 📘</label>
+                    <input id="add-fb" className="add-modal__input" type="text"
+                      placeholder="facebook.com/user" value={facebook}
+                      onChange={(e) => setFacebook(e.target.value)} />
+                  </div>
+                </div>
+
+                <div className="add-modal__row">
+                  <div className="add-modal__field">
+                    <label className="add-modal__field-label" htmlFor="add-snap">Snapchat (Optional) 👻</label>
+                    <input id="add-snap" className="add-modal__input" type="text"
+                      placeholder="username" value={snapchat}
+                      onChange={(e) => setSnapchat(e.target.value)} />
+                  </div>
+                  <div className="add-modal__field">
+                    <label className="add-modal__field-label" htmlFor="add-place">Birthplace</label>
+                    <input id="add-place" className="add-modal__input" type="text"
+                      placeholder="City, Country" value={birthPlace}
+                      onChange={(e) => setBirthPlace(e.target.value)} />
+                  </div>
                 </div>
 
                 <div className="add-modal__field">
-                  <label className="add-modal__field-label" htmlFor="add-wa">WhatsApp Number</label>
-                  <input id="add-wa" className="add-modal__input" type="tel"
-                    placeholder="+91 98765 43210" value={whatsapp}
-                    onChange={(e) => setWhatsapp(e.target.value)} />
-                </div>
-
-                <div className="add-modal__field">
-                  <label className="add-modal__field-label" htmlFor="add-email">Email Address</label>
+                  <label className="add-modal__field-label" htmlFor="add-email">Email Address (Optional)</label>
                   <input id="add-email" className="add-modal__input" type="email"
                     placeholder="name@email.com" value={email}
                     onChange={(e) => setEmail(e.target.value)} />

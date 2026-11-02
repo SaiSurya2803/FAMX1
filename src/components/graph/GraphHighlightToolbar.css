@@ -53,6 +53,18 @@
   box-shadow: 0 2px 8px rgba(200,169,110,0.3);
 }
 
+.ght-export-btn {
+  background: var(--accent-muted);
+  color: var(--accent);
+  border: 1px solid rgba(200, 169, 110, 0.3);
+  font-weight: 600;
+}
+.ght-export-btn:hover {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
 .ght-divider {
   width: 1px;
   height: 20px;

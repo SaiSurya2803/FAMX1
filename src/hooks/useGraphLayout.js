@@ -1,9 +1,9 @@
 import { useMemo } from 'react';
 import { useFamilyStore, RELATIONSHIP_TYPES } from '../store/familyStore';
 
-const H_NODE_GAP = 170;  // horizontal space between nodes
-const BRANCH_GAP = 80;   // horizontal space between sub-family branches
-const V_GEN_GAP  = 180;  // vertical gap between generation rows
+const H_NODE_GAP = 180;  // horizontal space between polaroid nodes
+const BRANCH_GAP = 90;   // horizontal space between sub-family branches
+const V_GEN_GAP  = 210;  // vertical gap between generation rows
 
 export function useGraphLayout() {
   const people        = useFamilyStore((s) => s.people);

@@ -3,6 +3,7 @@ import * as XLSX from 'xlsx';
 import { useFamilyStore, RELATIONSHIP_TYPES } from '../../store/familyStore';
 import { parseNaturalText, parseExcelRows } from '../../utils/aiGraphParser';
 import { processTextWithAi } from '../../utils/aiLlmEngine';
+import { soundFX } from '../../utils/soundEffects';
 import './KinsutraAgentWidget.css';
 
 export function KinsutraAgentWidget() {
@@ -92,6 +93,7 @@ export function KinsutraAgentWidget() {
 
     setStatusLog(`✅ Auto-Build Complete! Added ${newPeopleCount} members & ${newEdgeCount} connections ${sourceName ? `from ${sourceName}` : ''}.`);
     setLogDetails(details.slice(0, 10));
+    soundFX.playSuccess();
     useFamilyStore.getState().resetNodePositions();
     window.dispatchEvent(new CustomEvent('graph:center', { detail: { id: firstPersonId } }));
   };
@@ -245,8 +247,11 @@ export function KinsutraAgentWidget() {
     <>
       {/* Floating Corner Button */}
       <button
-        className="kagent-trigger"
-        onClick={() => setIsOpen(!isOpen)}
+        className="kagent-trigger shimmer-btn"
+        onClick={() => {
+          soundFX.playPop();
+          setIsOpen(!isOpen);
+        }}
         aria-label="Kinsutra AI Agent"
         id="kinsutra-ai-agent-corner-btn"
       >

@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { gsap } from 'gsap';
 import { useFamilyStore } from '../store/familyStore';
+import { soundFX } from '../utils/soundEffects';
 import './Onboarding.css';
 
 export function Onboarding() {
@@ -73,13 +74,36 @@ export function Onboarding() {
           <p className="onboarding__welcome-sub">
             You. From there, your family story unfolds.
           </p>
-          <button
-            className="onboarding__btn onboarding__btn--primary"
-            onClick={handleStart}
-            id="onboarding-start-btn"
-          >
-            Start with me
-          </button>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 18 }}>
+            <button
+              className="onboarding__btn onboarding__btn--primary shimmer-btn"
+              onClick={() => {
+                soundFX.playPop();
+                handleStart();
+              }}
+              id="onboarding-start-btn"
+            >
+              Start with me
+            </button>
+
+            <button
+              type="button"
+              className="onboarding__btn shimmer-btn"
+              style={{
+                background: 'var(--bg-elevated)',
+                border: '1px solid var(--border-base-c)',
+                color: 'var(--text-primary)',
+                fontSize: 13,
+              }}
+              onClick={() => {
+                soundFX.playSuccess();
+                useFamilyStore.getState().loadShowcaseFamily();
+                navigate('/app');
+              }}
+            >
+              ⚡ Explore 100M Showcase Dynasty (17 Relatives)
+            </button>
+          </div>
         </div>
       )}
 

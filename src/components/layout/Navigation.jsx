@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useFamilyStore } from '../../store/familyStore';
 import { FamilyPortalModal } from '../modals/FamilyPortalModal';
+import { soundFX } from '../../utils/soundEffects';
 import './Navigation.css';
 
 function getInitials(name) {
@@ -12,6 +13,7 @@ export function Navigation({ onSearch, onToggleTheme }) {
   const [mobileOpen,   setMobileOpen]   = useState(false);
   const [profileOpen,  setProfileOpen]  = useState(false);
   const [portalOpen,   setPortalOpen]   = useState(false);
+  const [audioMuted,   setAudioMuted]   = useState(soundFX.isMuted);
   const profileRef = useRef(null);
   const location   = useLocation();
   const navigate   = useNavigate();
@@ -84,6 +86,7 @@ export function Navigation({ onSearch, onToggleTheme }) {
                 </svg>
               </div>
               <span className="nav__logo-text">Kinsutra</span>
+              <span className="nav__logo-badge">AI 2.0</span>
             </Link>
 
             {isOnboarded && (
@@ -140,10 +143,56 @@ export function Navigation({ onSearch, onToggleTheme }) {
             </button>
           )}
 
+          {/* Audio Sound FX Toggle */}
+          <button
+            className="nav__action-btn nav__audio-btn"
+            onClick={() => {
+              const muted = soundFX.toggleMute();
+              if (!muted) soundFX.playPop();
+              // Force state re-render
+              setAudioMuted(muted);
+            }}
+            aria-label={audioMuted ? "Unmute UI Sound FX" : "Mute UI Sound FX"}
+            title={audioMuted ? "Sound Effects: Muted" : "Sound Effects: Active (Click to mute)"}
+          >
+            {audioMuted ? (
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="1" y1="1" x2="23" y2="23"/>
+                <path d="M9 9v3a3 3 0 0 0 5.12 2.12M15 9.34V4a3 3 0 0 0-5.94-.6"/>
+                <path d="M17 16.95A7 7 0 0 1 5 12v-2m14 0v2a7 7 0 0 1-.11 1.23"/>
+                <line x1="12" y1="19" x2="12" y2="23"/>
+                <line x1="8" y1="23" x2="16" y2="23"/>
+              </svg>
+            ) : (
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+                <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
+                <path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
+              </svg>
+            )}
+          </button>
+
+          {/* Quick 100M Showcase Demo Action (if not full app or exploring) */}
+          <button
+            className="nav__action-btn nav__demo-pill shimmer-btn"
+            onClick={() => {
+              soundFX.playSuccess();
+              useFamilyStore.getState().loadShowcaseFamily();
+              navigate('/app');
+            }}
+            title="Load $100M Showcase Dynastic Lineage"
+          >
+            <span className="live-pulse-dot" style={{ width: 6, height: 6 }} />
+            <span>Showcase Demo</span>
+          </button>
+
           {/* Theme Toggle Pill */}
           <button
             className="nav__action-btn nav__theme-btn"
-            onClick={onToggleTheme}
+            onClick={() => {
+              soundFX.playPop();
+              onToggleTheme();
+            }}
             aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
             title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
           >

@@ -291,6 +291,19 @@ export function GraphCanvas({
   // ── Compute Generation Tier Heights for 'generations' mode ─
   const relLevels = Array.from(new Set(visibleNodes.map((n) => n.relLevel ?? 0))).sort((a, b) => b - a);
 
+  // ── Compute Bounding Box of Nodes for Chalkboard Keepsake Layout ──
+  const bounds = useMemo(() => {
+    if (!visibleNodes.length) return null;
+    let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+    visibleNodes.forEach((n) => {
+      if (n.x < minX) minX = n.x;
+      if (n.x > maxX) maxX = n.x;
+      if (n.y < minY) minY = n.y;
+      if (n.y > maxY) maxY = n.y;
+    });
+    return { minX, maxX, minY, maxY, cx: (minX + maxX) / 2 };
+  }, [visibleNodes]);
+
   return (
     <svg
       ref={svgRef}
@@ -312,9 +325,106 @@ export function GraphCanvas({
           <feGaussianBlur stdDeviation="4" result="blur" />
           <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
         </filter>
+
+        {/* 3D Realistic Red Pushpin Gradient */}
+        <radialGradient id="red-pin-grad" cx="35%" cy="30%" r="70%">
+          <stop offset="0%" stopColor="#f87171" />
+          <stop offset="35%" stopColor="#ef4444" />
+          <stop offset="85%" stopColor="#dc2626" />
+          <stop offset="100%" stopColor="#991b1b" />
+        </radialGradient>
+
+        {/* Golden Amber Pushpin Gradient */}
+        <radialGradient id="gold-pin-grad" cx="35%" cy="30%" r="70%">
+          <stop offset="0%" stopColor="#fef08a" />
+          <stop offset="50%" stopColor="#eab308" />
+          <stop offset="100%" stopColor="#854d0e" />
+        </radialGradient>
       </defs>
 
       <g ref={gRef} transform={transform}>
+        {/* ── Chalkboard Memory Board Keepsake Doodles (Matching Reference Photo) ── */}
+        {bounds && (
+          <g className="chalkboard-doodles" style={{ pointerEvents: 'none', userSelect: 'none' }}>
+            {/* Top-Left: "FAMILY TREE" Chalk Oval */}
+            <g transform={`translate(${bounds.minX - 180}, ${bounds.minY - 20})`}>
+              <ellipse cx="0" cy="0" rx="90" ry="50" fill="none" stroke="#fde047" strokeWidth="2.5" strokeDasharray="14 4" opacity="0.9" filter="drop-shadow(0 0 4px rgba(253, 224, 71, 0.4))" />
+              <ellipse cx="-2" cy="1" rx="95" ry="54" fill="none" stroke="#f59e0b" strokeWidth="1.2" strokeDasharray="8 6" opacity="0.6" />
+              <text x="0" y="-8" textAnchor="middle" dominantBaseline="central" fill="#fde047" fontSize="26" fontFamily="var(--font-chalk-display, 'Fredericka the Great', cursive)" fontWeight="700" letterSpacing="0.08em">
+                FAMILY
+              </text>
+              <text x="0" y="20" textAnchor="middle" dominantBaseline="central" fill="#ffffff" fontSize="28" fontFamily="var(--font-chalk-display, 'Fredericka the Great', cursive)" fontWeight="700" letterSpacing="0.08em">
+                TREE
+              </text>
+            </g>
+
+            {/* Crown Chalk Doodle above Grandparents in Yellow Chalk */}
+            <g transform={`translate(${bounds.cx}, ${bounds.minY - 95})`} opacity="0.9">
+              <path d="M-22 10 L-22 -8 L-10 2 L0 -14 L10 2 L22 -8 L22 10 Z" fill="none" stroke="#fde047" strokeWidth="2.5" strokeLinejoin="round" filter="drop-shadow(0 0 3px rgba(253, 224, 71, 0.5))" />
+            </g>
+
+            {/* Top-Right: "FOTO KELUARGA" Family Keepsake Polaroid */}
+            <g transform={`translate(${bounds.maxX + 140}, ${bounds.minY - 10}) rotate(3)`} filter="drop-shadow(0 8px 18px rgba(0,0,0,0.45))">
+              <rect x="-65" y="-60" width="130" height="135" rx="3" fill="#ffffff" />
+              <image
+                href="https://images.unsplash.com/photo-1511895426328-dc8714191300?w=400&q=80"
+                x="-57" y="-52" width="114" height="85"
+                preserveAspectRatio="xMidYMid slice"
+              />
+              <text x="0" y="54" textAnchor="middle" dominantBaseline="central" fill="#0f172a" fontSize="12" fontFamily="var(--font-chalk-hand, 'Caveat', cursive)" fontWeight="700" letterSpacing="0.06em">
+                FOTO KELUARGA 📸
+              </text>
+              <rect x="-22" y="-67" width="44" height="14" rx="1" fill="rgba(254, 240, 138, 0.85)" stroke="rgba(202, 138, 4, 0.4)" strokeWidth="0.8" />
+              <circle cx="0" cy="-57" r="7.5" fill="url(#red-pin-grad)" stroke="#991b1b" strokeWidth="0.8" />
+              <ellipse cx="-2.2" cy="-59.2" rx="2.5" ry="1.5" fill="rgba(255,255,255,0.75)" />
+            </g>
+
+            {/* Hand-Drawn Chalk Doodles in Different Chalk Colors */}
+            <g opacity="0.8" strokeLinecap="round">
+              {/* Sky Blue Chalk Star */}
+              <path
+                d={`M${bounds.minX - 100} ${bounds.minY + 120} l4 8 9 1 -7 6 2 9 -8 -5 -8 5 2 -9 -7 -6 9 -1 Z`}
+                stroke="#38bdf8"
+                fill="rgba(56, 189, 248, 0.15)"
+                strokeWidth="2"
+                filter="drop-shadow(0 0 3px rgba(56, 189, 248, 0.5))"
+              />
+              {/* Pastel Pink Chalk Heart */}
+              <path
+                d={`M${bounds.cx - 60} ${bounds.maxY - 20} c-10 -15 -25 0 0 22 c25 -22 10 -37 0 -22 Z`}
+                stroke="#f472b6"
+                fill="rgba(244, 114, 182, 0.2)"
+                strokeWidth="2"
+                filter="drop-shadow(0 0 3px rgba(244, 114, 182, 0.5))"
+              />
+              {/* Mint Green Chalk Butterfly / Flourish */}
+              <path
+                d={`M${bounds.cx + 50} ${bounds.minY + 160} c-15 -15 -20 15 0 10 c20 5 15 -25 0 -10 Z`}
+                stroke="#4ade80"
+                fill="none"
+                strokeWidth="2"
+                filter="drop-shadow(0 0 3px rgba(74, 222, 128, 0.5))"
+              />
+              {/* Tangerine Orange Chalk Lightning Star */}
+              <path
+                d={`M${bounds.maxX + 40} ${bounds.minY + 90} l-8 14 h10 l-6 16 16 -18 h-10 Z`}
+                stroke="#fb923c"
+                fill="rgba(251, 146, 60, 0.2)"
+                strokeWidth="2"
+                filter="drop-shadow(0 0 3px rgba(251, 146, 60, 0.5))"
+              />
+              {/* Lavender Purple Chalk Sparkle */}
+              <path
+                d={`M${bounds.minX - 60} ${bounds.maxY + 40} l0 14 m-7 -7 l14 0 m-5 -5 l10 10 m0 -10 l-10 10`}
+                stroke="#c084fc"
+                fill="none"
+                strokeWidth="2"
+                filter="drop-shadow(0 0 3px rgba(192, 132, 252, 0.5))"
+              />
+            </g>
+          </g>
+        )}
+
         {/* Generation Tier Background Guides (when viewMode === 'generations') */}
         {viewMode === 'generations' && relLevels.map((relLvl) => {
           const tierNodes = visibleNodes.filter((n) => (n.relLevel ?? 0) === relLvl);

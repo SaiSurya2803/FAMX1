@@ -41,11 +41,23 @@ export function GraphEdge({ edge, fromNode, toNode, meId, people = {}, edges = [
   }
 
   const config = EDGE_CONFIGS[edge.type] || EDGE_CONFIGS[RELATIONSHIP_TYPES.SIBLING];
-  const path = getCubicPath(fromNode.x, fromNode.y, toNode.x, toNode.y);
-  const mid = getMidpoint(fromNode.x, fromNode.y, toNode.x, toNode.y);
-
-  const strokeWidth = (hovered || isHighlighted) ? 2.5 : 1.5;
   const isSpouse = edge.type === RELATIONSHIP_TYPES.SPOUSE;
+
+  // Anchor to top pushpin of Polaroid card (y - 56)
+  const pinOffsetY = -56;
+  const isParentChild = edge.type === RELATIONSHIP_TYPES.PARENT;
+  
+  // From bottom of parent card or pin to child's pin
+  const startX = fromNode.x;
+  const startY = isParentChild ? fromNode.y + 56 : fromNode.y + pinOffsetY;
+  const endX   = toNode.x;
+  const endY   = toNode.y + pinOffsetY;
+
+  const path = getCubicPath(startX, startY, endX, endY);
+  const mid = getMidpoint(startX, startY, endX, endY);
+
+  const strokeWidth = (hovered || isHighlighted) ? 3 : 2;
+  const stringColor = isSpouse ? '#fb7185' : (isHighlighted ? '#f59e0b' : '#eab308');
 
   // ── Calculate Perspective-Correct Relationship Label ─────
   let perspectiveLabel = config.label;
@@ -93,11 +105,11 @@ export function GraphEdge({ edge, fromNode, toNode, meId, people = {}, edges = [
         ref={pathRef}
         d={path}
         fill="none"
-        stroke={isHighlighted ? 'var(--accent)' : config.color}
+        stroke={stringColor}
         strokeWidth={strokeWidth}
         strokeLinecap="round"
         strokeDasharray={config.dash === 'none' ? undefined : config.dash}
-        opacity={isHighlighted ? 0.95 : (hovered ? 0.9 : 0.6)}
+        opacity={isHighlighted ? 1 : (hovered ? 0.95 : 0.85)}
         style={{
           transition: 'opacity 200ms ease, stroke-width 200ms ease, stroke 200ms ease',
         }}
