@@ -113,8 +113,15 @@ export function AddRelativeModal({ anchorId, onClose, onAdded }) {
       }
     }
 
-    const { from, to, type } = buildEdge(selectedKin.type, anchorId, targetId);
-    addEdge(from, to, type);
+    if (anchorId) {
+      const { from, to, type } = buildEdge(selectedKin.type, anchorId, targetId);
+      addEdge(from, to, type);
+    } else {
+      const currentMeId = useFamilyStore.getState().meId;
+      if (!currentMeId) {
+        useFamilyStore.setState({ meId: targetId });
+      }
+    }
     soundFX.playSuccess();
 
     onAdded(targetId);

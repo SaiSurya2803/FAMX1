@@ -1,9 +1,10 @@
-import { useRef, useState, useCallback, useEffect } from 'react';
+import { useRef, useState, useCallback, useEffect, useMemo } from 'react';
 import { gsap } from 'gsap';
 import { GraphNode } from './GraphNode';
 import { GraphEdge } from './GraphEdge';
 import { useGraphLayout } from '../../hooks/useGraphLayout';
 import { useFamilyStore } from '../../store/familyStore';
+import { soundFX } from '../../utils/soundEffects';
 import './GraphCanvas.css';
 
 const MIN_SCALE      = 0.15;
@@ -31,10 +32,16 @@ export function GraphCanvas({
   const people   = useFamilyStore((s) => s.people);
   const storeEdges = useFamilyStore((s) => s.edges);
   const setNodePos = useFamilyStore((s) => s.setNodePosition);
+  const loadShowcaseFamily = useFamilyStore((s) => s.loadShowcaseFamily);
 
-  // ── Camera state ──────────────────────────────────────────
-  const [camera, setCamera] = useState({ x: 0, y: 0, scale: 1 });
-  const cameraRef = useRef({ x: 0, y: 0, scale: 1 });
+  // ── Camera state (Defaults to center of viewport) ─────────
+  const initCam = () => ({
+    x: typeof window !== 'undefined' ? window.innerWidth / 2 : 450,
+    y: typeof window !== 'undefined' ? (window.innerHeight - 72) / 2 : 300,
+    scale: 0.95,
+  });
+  const [camera, setCamera] = useState(initCam);
+  const cameraRef = useRef(initCam());
   const animRef   = useRef(null);
 
   const updateCamera = useCallback((newCam) => {
@@ -67,9 +74,9 @@ export function GraphCanvas({
     };
 
     doCenter();
-    const timer = setTimeout(doCenter, 80);
+    const timer = setTimeout(doCenter, 60);
     return () => clearTimeout(timer);
-  }, [meId, nodes.length, updateCamera]);
+  }, [meId, nodes, updateCamera]);
 
   // ── Focus on node (smooth GSAP) ───────────────────────────
   const focusNode = useCallback((nodeId) => {
@@ -524,13 +531,90 @@ export function GraphCanvas({
       </g>
 
       {visibleNodes.length === 0 && (
-        <text
-          x="50%" y="50%" textAnchor="middle"
-          fill="var(--text-tertiary)" fontSize="13"
-          fontFamily="var(--font-sans)"
-        >
-          Your family graph will appear here
-        </text>
+        <foreignObject x="0" y="0" width="100%" height="100%" style={{ pointerEvents: 'none' }}>
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            height: '100%',
+            width: '100%',
+            pointerEvents: 'none',
+          }}>
+            <div style={{
+              pointerEvents: 'all',
+              background: 'rgba(20, 30, 24, 0.94)',
+              border: '2px dashed var(--chalk-yellow)',
+              borderRadius: 16,
+              padding: '32px 36px',
+              maxWidth: 440,
+              textAlign: 'center',
+              boxShadow: '0 20px 40px rgba(0,0,0,0.6)',
+              backdropFilter: 'blur(10px)',
+            }}>
+              <div style={{ fontSize: 32, marginBottom: 12 }}>🎓 🌳</div>
+              <h3 style={{
+                fontFamily: "var(--font-chalk-display, 'Fredericka the Great', cursive)",
+                color: 'var(--chalk-yellow)',
+                fontSize: 26,
+                letterSpacing: '0.05em',
+                marginBottom: 10,
+              }}>
+                Classroom Blackboard Ready
+              </h3>
+              <p style={{
+                fontFamily: "var(--font-chalk-hand, 'Caveat', cursive)",
+                color: 'var(--chalk-white)',
+                fontSize: 18,
+                lineHeight: 1.4,
+                marginBottom: 20,
+              }}>
+                No family members in this view yet. Start drawing your living kinship story or explore the showcase dynasty!
+              </p>
+              <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
+                <button
+                  type="button"
+                  className="shimmer-btn"
+                  onClick={() => {
+                    soundFX.playPop();
+                    onAddRelative && onAddRelative(meId || null);
+                  }}
+                  style={{
+                    background: 'var(--accent)',
+                    color: '#fff',
+                    border: 'none',
+                    borderRadius: 10,
+                    padding: '10px 18px',
+                    fontWeight: 700,
+                    fontSize: 14,
+                    cursor: 'pointer',
+                  }}
+                >
+                  ➕ Add First Relative
+                </button>
+                <button
+                  type="button"
+                  className="shimmer-btn"
+                  onClick={() => {
+                    soundFX.playSuccess();
+                    loadShowcaseFamily();
+                  }}
+                  style={{
+                    background: 'rgba(255,255,255,0.1)',
+                    color: 'var(--chalk-yellow)',
+                    border: '1px solid var(--chalk-yellow)',
+                    borderRadius: 10,
+                    padding: '10px 18px',
+                    fontWeight: 600,
+                    fontSize: 14,
+                    cursor: 'pointer',
+                  }}
+                >
+                  ⚡ Load Showcase Dynasty
+                </button>
+              </div>
+            </div>
+          </div>
+        </foreignObject>
       )}
     </svg>
   );

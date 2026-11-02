@@ -28,12 +28,14 @@ export function AppPage() {
   const count = getPersonCount();
   const gens = getGenerationCount();
 
-  // If there are zero people in graph, auto-load showcase dynasty immediately
+  const isOnboarded = useFamilyStore((s) => s.isOnboarded);
+
+  // If there are zero people and user has not onboarded, load showcase dynasty
   useEffect(() => {
-    if (count === 0) {
+    if (count === 0 && !isOnboarded) {
       loadShowcaseFamily();
     }
-  }, [count, loadShowcaseFamily]);
+  }, [count, isOnboarded, loadShowcaseFamily]);
 
   const [selectedId, setSelectedId] = useState(null);
   const [addRelativeFor, setAddRelativeFor] = useState(null);
@@ -95,7 +97,7 @@ export function AppPage() {
       {/* Top bar */}
       <div className="app-topbar">
         <div className="app-topbar__greeting">
-          <span className="app-topbar__greet-text">{getGreeting()}, {firstName}.</span>
+          <span className="app-topbar__greet-text">{getGreeting()}{firstName ? `, ${firstName}` : ''}.</span>
           {count > 1 && (
             <span className="app-topbar__stats">
               {count} {count === 1 ? 'person' : 'people'}

@@ -99,9 +99,9 @@ export function GraphNode({
 
       {/* Main Polaroid Body with Organic Tilt & Lift */}
       <g
+        transform={`translate(0, ${currentLift}) rotate(${tilt}) scale(${currentScale})`}
         style={{
           transition: 'transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), filter 0.25s ease',
-          transform: `translateY(${currentLift}px) rotate(${tilt}deg) scale(${currentScale})`,
           transformOrigin: '0px -40px',
           filter: hovered
             ? 'drop-shadow(0 14px 28px rgba(0,0,0,0.55))'
