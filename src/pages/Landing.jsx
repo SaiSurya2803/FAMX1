@@ -1,51 +1,55 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useFamilyStore } from '../store/familyStore';
 import { soundFX } from '../utils/soundEffects';
 import { parseNaturalText } from '../utils/aiGraphParser';
 import './Landing.css';
 
-gsap.registerPlugin(ScrollTrigger);
-
-/* ─── Hero Graph Nodes ───────────────────────────────────────── */
+/* ─── Hero Graph Nodes (Enriched with Kinship Intelligence) ──── */
 const NODES = [
-  // stage 0
-  { id: 'me',       x: 450, y: 320, r: 24, isMe: true,  label: 'You',         stage: 0 },
-  // stage 1
-  { id: 'father',   x: 305, y: 195, r: 16, isMe: false, label: 'Father',      stage: 1 },
-  { id: 'mother',   x: 585, y: 190, r: 16, isMe: false, label: 'Mother',      stage: 1 },
-  // stage 2
-  { id: 'gfp',      x: 185, y: 95,  r: 12, isMe: false, label: 'Grandfather', stage: 2 },
-  { id: 'gmp',      x: 355, y: 80,  r: 12, isMe: false, label: 'Grandmother', stage: 2 },
-  { id: 'gfm',      x: 525, y: 78,  r: 12, isMe: false, label: 'Grandfather', stage: 2 },
-  { id: 'gmm',      x: 690, y: 92,  r: 12, isMe: false, label: 'Grandmother', stage: 2 },
-  // stage 3
-  { id: 'uncle',    x: 125, y: 195, r: 12, isMe: false, label: 'Uncle',       stage: 3 },
-  { id: 'aunt',     x: 765, y: 188, r: 12, isMe: false, label: 'Aunt',        stage: 3 },
-  { id: 'ggf',      x:  90, y:  32, r:  8, isMe: false, label: '',            stage: 3 },
-  { id: 'ggm',      x: 255, y:  22, r:  8, isMe: false, label: '',            stage: 3 },
-  // stage 4
-  { id: 'cousin1',  x:  65, y: 290, r:  9, isMe: false, label: 'Cousin',      stage: 4 },
-  { id: 'cousin2',  x: 115, y: 360, r:  9, isMe: false, label: 'Cousin',      stage: 4 },
-  { id: 'sibling',  x: 325, y: 440, r: 13, isMe: false, label: 'Sibling',     stage: 4 },
-  { id: 'sib2',     x: 835, y: 180, r:  9, isMe: false, label: '',            stage: 4 },
-  // stage 5
-  { id: 'spouse',   x: 590, y: 330, r: 16, isMe: false, label: 'Spouse',      stage: 5 },
-  { id: 'sf',       x: 730, y: 215, r: 12, isMe: false, label: "Spouse's",    stage: 5 },
-  { id: 'sm',       x: 825, y: 300, r: 12, isMe: false, label: 'Family',      stage: 5 },
-  { id: 'sf2',      x: 845, y: 400, r:  9, isMe: false, label: '',            stage: 5 },
-  // stage 6
-  { id: 'child1',   x: 340, y: 505, r: 13, isMe: false, label: 'Child',       stage: 6 },
-  { id: 'child2',   x: 465, y: 518, r: 13, isMe: false, label: 'Child',       stage: 6 },
-  { id: 'child3',   x: 595, y: 498, r: 12, isMe: false, label: 'Child',       stage: 6 },
-  // stage 7 — extra network nodes
-  { id: 'x1',       x:  42, y: 175, r:  7, isMe: false, label: '',            stage: 7 },
-  { id: 'x2',       x: 190, y: 555, r:  7, isMe: false, label: '',            stage: 7 },
-  { id: 'x3',       x: 700, y: 555, r:  7, isMe: false, label: '',            stage: 7 },
-  { id: 'x4',       x: 875, y: 490, r:  7, isMe: false, label: '',            stage: 7 },
-  { id: 'x5',       x: 420, y: 590, r:  7, isMe: false, label: '',            stage: 7 },
+  // Stage 0: Ego (Origin)
+  { id: 'me',       x: 450, y: 320, r: 24, isMe: true,  label: 'You',         name: 'Arjun Rao',         role: 'Root Individual (Ego)',       formula: 'EGO',          telugu: 'Nēnu',            hindi: 'Aap',           tamil: 'Naan',        stage: 0 },
+  
+  // Stage 1: Direct Ascent
+  { id: 'father',   x: 305, y: 195, r: 16, isMe: false, label: 'Father',      name: 'Ramesh Rao',        role: 'Paternal Parent',             formula: 'Fa (+)',       telugu: 'Nānna',           hindi: 'Pitāji',        tamil: 'Appā',        stage: 1 },
+  { id: 'mother',   x: 585, y: 190, r: 16, isMe: false, label: 'Mother',      name: 'Lakshmi Devi',      role: 'Maternal Parent',             formula: 'Mo (+)',       telugu: 'Amma',            hindi: 'Mātāji',        tamil: 'Ammā',        stage: 1 },
+  
+  // Stage 2: Grandparent Ancestral Tier
+  { id: 'gfp',      x: 185, y: 95,  r: 13, isMe: false, label: 'Grandfather', name: 'Kiran Rao',         role: 'Paternal Grandfather',        formula: 'FaFa (++)',    telugu: 'Thātha',          hindi: 'Dādāji',        tamil: 'Thāthā',      stage: 2 },
+  { id: 'gmp',      x: 355, y: 80,  r: 13, isMe: false, label: 'Grandmother', name: 'Sujatha Rao',       role: 'Paternal Grandmother',        formula: 'FaMo (++)',    telugu: 'Nānnamma',        hindi: 'Dādīji',        tamil: 'Pātti',       stage: 2 },
+  { id: 'gfm',      x: 525, y: 78,  r: 13, isMe: false, label: 'Grandfather', name: 'Venkateswara Rao',  role: 'Maternal Grandfather',        formula: 'MoFa (++)',    telugu: 'Thātha',          hindi: 'Nānāji',        tamil: 'Thāthā',      stage: 2 },
+  { id: 'gmm',      x: 690, y: 92,  r: 13, isMe: false, label: 'Grandmother', name: 'Kamala Devi',       role: 'Maternal Grandmother',        formula: 'MoMo (++)',    telugu: 'Ammamma',         hindi: 'Nānīji',        tamil: 'Pātti',       stage: 2 },
+  
+  // Stage 3: Collateral Lineages & Great-Ancestors
+  { id: 'uncle',    x: 125, y: 195, r: 13, isMe: false, label: 'Uncle',       name: 'Suresh Rao',        role: 'Paternal Uncle (Junior)',     formula: 'FaBr (+ 0)',   telugu: 'Bābāi / Chinānna', hindi: 'Chāchā',        tamil: 'Chithappā',   stage: 3 },
+  { id: 'aunt',     x: 765, y: 188, r: 13, isMe: false, label: 'Aunt',        name: 'Padma Rao',         role: 'Maternal Aunt (Junior)',      formula: 'MoSi (+ 0)',   telugu: 'Pinni',           hindi: 'Mausi',         tamil: 'Chiththi',    stage: 3 },
+  { id: 'ggf',      x:  90, y:  32, r:  9, isMe: false, label: 'Great-GF',    name: 'Govind Rao',        role: 'Paternal Great-Grandfather',  formula: 'FaFaFa (+++)', telugu: 'Muthātha',        hindi: 'Pardādā',       tamil: 'Kollu Thāthā', stage: 3 },
+  { id: 'ggm',      x: 255, y:  22, r:  9, isMe: false, label: 'Great-GM',    name: 'Radha Devi',        role: 'Paternal Great-Grandmother',  formula: 'FaFaMo (+++)', telugu: 'Muthavva',        hindi: 'Pardādī',       tamil: 'Kollu Pātti', stage: 3 },
+  
+  // Stage 4: Cousins (Parallel & Cross / Menarikam) & Siblings
+  { id: 'cousin1',  x:  65, y: 290, r: 10, isMe: false, label: 'Cousin',      name: 'Rahul Rao',         role: 'Parallel Cousin (Dāyādi)',    formula: 'FaBrSo (+ 0 -)', telugu: 'Anna / Thambi',   hindi: 'Chachērā Bhāi', tamil: 'Annan',       stage: 4 },
+  { id: 'cousin2',  x: 115, y: 360, r: 10, isMe: false, label: 'Cousin',      name: 'Sneha Rao',         role: 'Parallel Cousin',             formula: 'FaBrDa (+ 0 -)', telugu: 'Akka / Chelli',   hindi: 'Chachērī Bahan', tamil: 'Akka',       stage: 4 },
+  { id: 'sibling',  x: 325, y: 440, r: 14, isMe: false, label: 'Sister',      name: 'Priya Rao',         role: 'Biological Sister',           formula: 'Si (0)',       telugu: 'Chelli',          hindi: 'Bahan',         tamil: 'Thangai',     stage: 4 },
+  { id: 'sib2',     x: 835, y: 180, r: 10, isMe: false, label: 'Cross-Cousin', name: 'Aditya Varma',     role: 'Cross-Cousin (Mēnarīkam)',    formula: 'MoBrSo (+ 0 -)', telugu: 'Bāva',            hindi: 'Mamērā Bhāi',   tamil: 'Machan',      stage: 4 },
+  
+  // Stage 5: Affinal Alliances (Spouse & In-Laws)
+  { id: 'spouse',   x: 590, y: 330, r: 16, isMe: false, label: 'Spouse',      name: 'Ananya Rao',        role: 'Spouse (Wife)',               formula: 'Wi (=)',       telugu: 'Bhārya',          hindi: 'Patnī',         tamil: 'Manaivi',     stage: 5 },
+  { id: 'sf',       x: 730, y: 215, r: 12, isMe: false, label: "Father-in-law", name: 'Prasad Rao',      role: 'Father-in-Law',               formula: 'WiFa (= +)',   telugu: 'Māmā',            hindi: 'Sasur',         tamil: 'Māmanār',     stage: 5 },
+  { id: 'sm',       x: 825, y: 300, r: 12, isMe: false, label: 'Mother-in-law', name: 'Sarada Devi',     role: 'Mother-in-Law',               formula: 'WiMo (= +)',   telugu: 'Atta',            hindi: 'Sāas',          tamil: 'Māmiyār',     stage: 5 },
+  { id: 'sf2',      x: 845, y: 400, r: 10, isMe: false, label: 'Brother-in-law', name: 'Karthik Rao',    role: 'Brother-in-Law',              formula: 'WiBr (= 0)',   telugu: 'Bāva / Maridi',   hindi: 'Sālā',          tamil: 'Machan',      stage: 5 },
+  
+  // Stage 6: Direct Descent (Children)
+  { id: 'child1',   x: 340, y: 505, r: 13, isMe: false, label: 'Son',         name: 'Dhruv Rao',         role: 'Elder Son',                   formula: 'So (-)',       telugu: 'Kodu-ku',         hindi: 'Bētā',          tamil: 'Magan',       stage: 6 },
+  { id: 'child2',   x: 465, y: 518, r: 13, isMe: false, label: 'Daughter',    name: 'Diya Rao',          role: 'Daughter',                    formula: 'Da (-)',       telugu: 'Kūthuru',         hindi: 'Bētī',          tamil: 'Magal',       stage: 6 },
+  { id: 'child3',   x: 595, y: 498, r: 13, isMe: false, label: 'Son',         name: 'Aarav Rao',         role: 'Younger Son',                 formula: 'So (-)',       telugu: 'Chinna Koduku',   hindi: 'Chhotā Bētā',   tamil: 'Ilamagan',    stage: 6 },
+  
+  // Stage 7: Extended Clan Dynasty
+  { id: 'x1',       x:  42, y: 175, r:  8, isMe: false, label: 'Clan Elder',  name: 'V. Krishna Rao',    role: 'Patrilineal Clan Elder',      formula: 'FaFaBr (+ + 0)', telugu: 'Peddanānna',     hindi: 'Tauji',         tamil: 'Periyappā',   stage: 7 },
+  { id: 'x2',       x: 190, y: 555, r:  8, isMe: false, label: 'Nephew',      name: 'Rohan',             role: 'Nephew',                      formula: 'SiSo (0 -)',   telugu: 'Mēnalluḍu',       hindi: 'Bhānjā',        tamil: 'Marumagan',   stage: 7 },
+  { id: 'x3',       x: 700, y: 555, r:  8, isMe: false, label: 'Granddaughter', name: 'Maya',            role: 'Granddaughter',               formula: 'SoDa (- -)',   telugu: 'Manumaralu',      hindi: 'Pōtī',          tamil: 'Pēthi',       stage: 7 },
+  { id: 'x4',       x: 875, y: 490, r:  8, isMe: false, label: 'In-Law Kin',  name: 'Meera Rao',         role: 'Affinal Relative',            formula: 'WiBrWi (= 0 =)', telugu: 'Vadina',         hindi: 'Bhabhi',        tamil: 'Anni',        stage: 7 },
+  { id: 'x5',       x: 420, y: 590, r:  8, isMe: false, label: 'Grandson',    name: 'Vihaan',            role: 'Grandson',                    formula: 'DaSo (- -)',   telugu: 'Manamaḍu',        hindi: 'Nātī',          tamil: 'Pēran',       stage: 7 },
 ];
 
 const EDGES = [
@@ -63,130 +67,75 @@ const EDGES = [
   ['x1','uncle'], ['x2','sibling'], ['x3','child3'], ['x4','sf2'], ['x5','child2'],
 ];
 
+/* ─── Generational Genesis Stages ───────────────────────────── */
 const STAGES = [
-  { heading: 'You.',                                      sub: null },
-  { heading: 'You came\nfrom somewhere.',                 sub: null },
-  { heading: 'Your parents\ncame from somewhere.',        sub: null },
-  { heading: 'Their parents\ndid too.',                   sub: null },
-  { heading: 'Families\ngrew outward.',                   sub: null },
-  { heading: 'They connected.\nMarried. Branched.',       sub: null },
-  { heading: 'Now your\nstory continues.',                sub: null },
-  { heading: 'Your family\nis a living network.',         sub: 'Synthesized with mathematical precision.' },
+  {
+    idx: 0,
+    tag: 'ORIGIN',
+    short: '0. You',
+    heading: 'You.',
+    sub: 'The Conscious Root (Ego)',
+    desc: 'Every family tree begins from a single conscious individual — the reference root for all kinship algebra.',
+  },
+  {
+    idx: 1,
+    tag: 'ASCENT +1',
+    short: '1. Parents',
+    heading: 'Direct Ascent.',
+    sub: 'Father & Mother Pillars',
+    desc: 'Two ancestral branches converge: the patrilineal stem and matrilineal stem form the core foundation.',
+  },
+  {
+    idx: 2,
+    tag: 'ASCENT +2',
+    short: '2. Grandparents',
+    heading: 'The 4 Pillars.',
+    sub: 'Paternal & Maternal Roots',
+    desc: 'Four grandparents anchor lineage memory, splitting generational heritage into deep cultural lineages.',
+  },
+  {
+    idx: 3,
+    tag: 'COLLATERAL',
+    short: '3. Collateral Clans',
+    heading: 'Expanding Outward.',
+    sub: 'Uncles, Aunts & Great-Elders',
+    desc: 'Collateral branches stretch horizontally across ancestral villages, establishing clan alliances.',
+  },
+  {
+    idx: 4,
+    tag: 'ALGEBRA',
+    short: '4. Cousins & Siblings',
+    heading: 'Parallel & Cross.',
+    sub: 'Dayadi vs Menarikam',
+    desc: 'Lounsbury formal algebra cleanly distinguishes FaBrSo (Parallel / Dayadi) from MoBrSo (Cross / Menarikam).',
+  },
+  {
+    idx: 5,
+    tag: 'AFFINE =',
+    short: '5. Marriage Alliances',
+    heading: 'Affinal Networks.',
+    sub: 'Spouse & In-Laws',
+    desc: 'Marriage bridges two independent genealogical graphs into a single interconnected, resilient social fabric.',
+  },
+  {
+    idx: 6,
+    tag: 'DESCENT -1',
+    short: '6. Children',
+    heading: 'Generational Ascent.',
+    sub: 'Descent & Continuity',
+    desc: 'The next generation branches forward, inheriting oral traditions, cultural identity, and living history.',
+  },
+  {
+    idx: 7,
+    tag: 'DYNASTY',
+    short: '7. Living Network',
+    heading: 'A Living Knowledge Graph.',
+    sub: '25+ Kinship Nodes at 60 FPS',
+    desc: 'The complete multi-generational dynasty: synthesized with mathematical rigor and instantaneous calculation.',
+  },
 ];
 
-/* ─── Hero SVG Graph Component ──────────────────────────────── */
-function HeroGraph({ nodeRefs, edgeRefs }) {
-  const nodeMap = {};
-  NODES.forEach((n) => { nodeMap[n.id] = n; });
-
-  return (
-    <svg
-      className="lhero-graph"
-      viewBox="0 0 900 640"
-      preserveAspectRatio="xMidYMid meet"
-      aria-hidden="true"
-    >
-      <defs>
-        <filter id="me-glow" x="-60%" y="-60%" width="220%" height="220%">
-          <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="blur" />
-          <feMerge>
-            <feMergeNode in="blur" />
-            <feMergeNode in="SourceGraphic" />
-          </feMerge>
-        </filter>
-        <filter id="node-glow" x="-40%" y="-40%" width="180%" height="180%">
-          <feGaussianBlur in="SourceGraphic" stdDeviation="2.5" result="blur" />
-          <feMerge>
-            <feMergeNode in="blur" />
-            <feMergeNode in="SourceGraphic" />
-          </feMerge>
-        </filter>
-        <radialGradient id="me-grad" cx="40%" cy="35%" r="65%">
-          <stop offset="0%" stopColor="#fdf4dc" stopOpacity="0.95" />
-          <stop offset="60%" stopColor="#e8c87e" stopOpacity="0.8" />
-          <stop offset="100%" stopColor="#c8a96e" stopOpacity="0.6" />
-        </radialGradient>
-        <radialGradient id="node-grad" cx="40%" cy="35%" r="65%">
-          <stop offset="0%" stopColor="#ffffff" stopOpacity="0.95" />
-          <stop offset="100%" stopColor="#c8a96e" stopOpacity="0.4" />
-        </radialGradient>
-      </defs>
-
-      {/* Edges */}
-      {EDGES.map(([fromId, toId], i) => {
-        const from = nodeMap[fromId];
-        const to   = nodeMap[toId];
-        if (!from || !to) return null;
-        const dx = to.x - from.x;
-        const dy = to.y - from.y;
-        const cx1 = from.x + dx * 0.25;
-        const cy1 = from.y + dy * 0.75;
-        const cx2 = to.x - dx * 0.25;
-        const cy2 = to.y - dy * 0.25;
-        const d = `M${from.x} ${from.y} C${cx1} ${cy1},${cx2} ${cy2},${to.x} ${to.y}`;
-        const isSpouseEdge = (fromId === 'me' && toId === 'spouse') || (fromId === 'spouse' && toId === 'me');
-        return (
-          <path
-            key={i}
-            ref={(el) => { if (edgeRefs) edgeRefs.current[i] = el; }}
-            id={`ge-${i}`}
-            d={d}
-            fill="none"
-            stroke={isSpouseEdge ? 'rgba(230,100,130,0.5)' : 'rgba(200,169,110,0.35)'}
-            strokeWidth={isSpouseEdge ? 1.8 : 1.2}
-            strokeDasharray={isSpouseEdge ? '4 3' : undefined}
-            style={{ opacity: 0 }}
-          />
-        );
-      })}
-
-      {/* Nodes */}
-      {NODES.map((node) => (
-        <g
-          key={node.id}
-          ref={(el) => { if (nodeRefs) nodeRefs.current[node.id] = el; }}
-          id={`gn-${node.id}`}
-          transform={`translate(${node.x},${node.y})`}
-          style={{ opacity: node.isMe ? 1 : 0, transform: `translate(${node.x}px,${node.y}px) scale(${node.isMe ? 1 : 0})` }}
-        >
-          {/* Halo rings for ME */}
-          {node.isMe && (
-            <>
-              <circle r={node.r + 20} fill="none" stroke="#c8a96e" strokeWidth={0.5} opacity={0.2} className="me-halo-outer" />
-              <circle r={node.r + 11} fill="none" stroke="#c8a96e" strokeWidth={0.7} opacity={0.35} className="me-halo-inner" />
-            </>
-          )}
-
-          <circle
-            r={node.r}
-            fill={node.isMe ? 'url(#me-grad)' : 'url(#node-grad)'}
-            stroke={node.isMe ? '#e8c87e' : 'rgba(200,169,110,0.5)'}
-            strokeWidth={node.isMe ? 2 : 1.2}
-            filter={node.isMe ? 'url(#me-glow)' : (node.r >= 12 ? 'url(#node-glow)' : undefined)}
-          />
-
-          {/* Label */}
-          {node.label && (
-            <text
-              y={node.r + 14}
-              textAnchor="middle"
-              fill={node.isMe ? 'var(--accent)' : 'var(--text-secondary)'}
-              fontSize={node.isMe ? 11 : 9}
-              fontFamily="Inter, sans-serif"
-              fontWeight={node.isMe ? '700' : '500'}
-              letterSpacing="0.04em"
-              style={{ userSelect: 'none' }}
-            >
-              {node.label}
-            </text>
-          )}
-        </g>
-      ))}
-    </svg>
-  );
-}
-
-/* ─── Sample Prompts for Interactive AI Sandbox ─────────────── */
+/* ─── Interactive AI Sandbox Presets ────────────────────────── */
 const SANDBOX_PRESETS = [
   {
     name: '🌟 Indian Joint Family',
@@ -200,7 +149,277 @@ const SANDBOX_PRESETS = [
     name: '👑 Dynastic Royal Lineage',
     text: 'King Vikramaditya and Queen Chandravathi had prince Devendra and princess Yashoda. Prince Devendra married Princess Maya and had prince Aarav.',
   },
+  {
+    name: '🌿 Multi-Tier Diaspora',
+    text: 'Arjun married Ananya. Arjun is son of Ramesh and Lakshmi. Arjun has sister Priya. Ananya is daughter of Prasad and Sarada. Arjun and Ananya have son Dhruv and daughter Diya.',
+  },
 ];
+
+/* ─── Comprehensive Kinship Calculator Chains ───────────────── */
+const KINSHIP_CHAINS = [
+  {
+    label: "Mother's Brother's Son (MoBrSo)",
+    classification: 'Cross-Cousin (Mēnarīkam)',
+    formula: 'Mo + Br 0 So -',
+    reduction: 'M+ B0 S-',
+    telugu: 'Bāva / Maridi',
+    hindi: 'Mamērā Bhāi',
+    tamil: 'Machān',
+    significance: 'Eligible cross-cousin matrimonial alliance in Dravidian anthropological tradition.',
+  },
+  {
+    label: "Father's Brother's Son (FaBrSo)",
+    classification: 'Parallel Cousin (Dāyādi / Agnatic)',
+    formula: 'Fa + Br 0 So -',
+    reduction: 'F+ B0 S-',
+    telugu: 'Anna / Thambi (Brother)',
+    hindi: 'Chachērā Bhāi',
+    tamil: 'Annan / Thambi',
+    significance: 'Parallel agnatic cousin regarded as equal to a biological brother in customary law.',
+  },
+  {
+    label: "Mother's Sister's Daughter (MoSiDa)",
+    classification: 'Parallel Cousin (Matrilateral)',
+    formula: 'Mo + Si 0 Da -',
+    reduction: 'M+ Z0 D-',
+    telugu: 'Akka / Chelli (Sister)',
+    hindi: 'Mausērī Bahan',
+    tamil: 'Akkā / Thangai',
+    significance: 'Classified strictly as sibling category in Dravidian and Indo-Aryan systems.',
+  },
+  {
+    label: "Father's Sister's Son (FaSiSo)",
+    classification: 'Cross-Cousin (Patrilateral Menarikam)',
+    formula: 'Fa + Si 0 So -',
+    reduction: 'F+ Z0 S-',
+    telugu: 'Bāva / Menarikam Kin',
+    hindi: 'Phuphērā Bhāi',
+    tamil: 'Machān / Athān',
+    significance: 'Classic Dravidian cross-cousin relationship connecting maternal and paternal stems.',
+  },
+  {
+    label: "Mother's Brother (MoBr)",
+    classification: 'Maternal Uncle (Avunculate)',
+    formula: 'Mo + Br 0',
+    reduction: 'M+ B0',
+    telugu: 'Māmā / Mēnamāma',
+    hindi: 'Māmā',
+    tamil: 'Māman',
+    significance: 'Key ritual patron and decision maker in traditional Indian life-cycle ceremonies.',
+  },
+  {
+    label: "Father's Younger Brother (FaYoBr)",
+    classification: 'Junior Paternal Uncle (Patron)',
+    formula: 'Fa + Br 0 (junior)',
+    reduction: 'F+ B0 (jr)',
+    telugu: 'Bābāi / Chinānna',
+    hindi: 'Chāchā',
+    tamil: 'Chithappā',
+    significance: 'Classified as junior father in Dravidian bifurcate-merging kinship.',
+  },
+  {
+    label: "Father's Elder Brother (FaElBr)",
+    classification: 'Senior Paternal Uncle (Patriarch)',
+    formula: 'Fa + Br 0 (senior)',
+    reduction: 'F+ B0 (sr)',
+    telugu: 'Peddanānna',
+    hindi: 'Tāuji',
+    tamil: 'Periyappā',
+    significance: 'Senior patriarchal authority figure holding joint clan responsibilities.',
+  },
+  {
+    label: "Father's Father (FaFa)",
+    classification: 'Paternal Grandfather (Agnatic Stem)',
+    formula: 'Fa + Fa +',
+    reduction: 'F+ F+',
+    telugu: 'Thātha',
+    hindi: 'Dādāji',
+    tamil: 'Thāthā',
+    significance: 'Head of patrilineage; source of hereditary gotra and family name.',
+  },
+  {
+    label: "Mother's Mother (MoMo)",
+    classification: 'Maternal Grandmother (Matriarch)',
+    formula: 'Mo + Mo +',
+    reduction: 'M+ M+',
+    telugu: 'Ammamma',
+    hindi: 'Nānīji',
+    tamil: 'Pātti',
+    significance: 'Matrilineal matriarch and custodian of generational culinary and oral lore.',
+  },
+  {
+    label: "Spouse's Mother (WiMo / HuMo)",
+    classification: 'Mother-in-Law (Affinal Pillar)',
+    formula: 'Wi = Mo +',
+    reduction: 'W= M+',
+    telugu: 'Atta / Atthagāru',
+    hindi: 'Sāas',
+    tamil: 'Māmiyār',
+    significance: 'Key affinal connection linking the domestic spheres of both married households.',
+  },
+  {
+    label: "Sister's Son (SiSo)",
+    classification: 'Sister’s Son / Nephew (Menalludu)',
+    formula: 'Si 0 So -',
+    reduction: 'Z0 S-',
+    telugu: 'Mēnalluḍu',
+    hindi: 'Bhānjā',
+    tamil: 'Marumagan',
+    significance: 'Special avuncular kinship bond with maternal uncles in South Asian heritage.',
+  },
+];
+
+/* ─── Hero SVG Graph Component ──────────────────────────────── */
+function HeroGraph({ currentStage, onHoverNode, activeNode }) {
+  const nodeMap = {};
+  NODES.forEach((n) => { nodeMap[n.id] = n; });
+
+  return (
+    <svg
+      className="lhero-graph"
+      viewBox="0 0 900 640"
+      preserveAspectRatio="xMidYMid meet"
+      aria-label="Interactive Living Kinship Graph"
+    >
+      <defs>
+        <filter id="me-glow" x="-60%" y="-60%" width="220%" height="220%">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="blur" />
+          <feMerge>
+            <feMergeNode in="blur" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+        <filter id="node-glow" x="-40%" y="-40%" width="180%" height="180%">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur" />
+          <feMerge>
+            <feMergeNode in="blur" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+        <radialGradient id="me-grad" cx="40%" cy="35%" r="65%">
+          <stop offset="0%" stopColor="#fef08a" stopOpacity="1" />
+          <stop offset="60%" stopColor="#f59e0b" stopOpacity="0.9" />
+          <stop offset="100%" stopColor="#b45309" stopOpacity="0.8" />
+        </radialGradient>
+        <radialGradient id="node-grad" cx="40%" cy="35%" r="65%">
+          <stop offset="0%" stopColor="#ffffff" stopOpacity="0.95" />
+          <stop offset="60%" stopColor="#fde047" stopOpacity="0.75" />
+          <stop offset="100%" stopColor="#c8a96e" stopOpacity="0.45" />
+        </radialGradient>
+        <radialGradient id="spouse-grad" cx="40%" cy="35%" r="65%">
+          <stop offset="0%" stopColor="#fbcfe8" stopOpacity="1" />
+          <stop offset="70%" stopColor="#ec4899" stopOpacity="0.8" />
+          <stop offset="100%" stopColor="#9d174d" stopOpacity="0.6" />
+        </radialGradient>
+      </defs>
+
+      {/* Edges */}
+      {EDGES.map(([fromId, toId], i) => {
+        const from = nodeMap[fromId];
+        const to   = nodeMap[toId];
+        if (!from || !to) return null;
+        
+        const isVisible = from.stage <= currentStage && to.stage <= currentStage;
+        const dx = to.x - from.x;
+        const dy = to.y - from.y;
+        const cx1 = from.x + dx * 0.25;
+        const cy1 = from.y + dy * 0.75;
+        const cx2 = to.x - dx * 0.25;
+        const cy2 = to.y - dy * 0.25;
+        const d = `M${from.x} ${from.y} C${cx1} ${cy1},${cx2} ${cy2},${to.x} ${to.y}`;
+        const isSpouseEdge = (fromId === 'me' && toId === 'spouse') || (fromId === 'spouse' && toId === 'me');
+        
+        return (
+          <path
+            key={i}
+            id={`ge-${i}`}
+            d={d}
+            fill="none"
+            stroke={isSpouseEdge ? 'rgba(244,114,182,0.85)' : 'rgba(253,224,71,0.45)'}
+            strokeWidth={isSpouseEdge ? 2 : 1.3}
+            strokeDasharray={isSpouseEdge ? '5 3' : undefined}
+            className={`lhero-edge ${isVisible ? 'lhero-edge--active' : ''}`}
+            style={{
+              opacity: isVisible ? 1 : 0.05,
+              transition: 'opacity 0.4s ease, stroke 0.3s ease',
+            }}
+          />
+        );
+      })}
+
+      {/* Nodes */}
+      {NODES.map((node) => {
+        const isVisible = node.stage <= currentStage;
+        const isSelected = activeNode?.id === node.id;
+        const isSpouse = node.id === 'spouse';
+
+        return (
+          <g
+            key={node.id}
+            id={`gn-${node.id}`}
+            transform={`translate(${node.x},${node.y})`}
+            className={`lhero-node-g ${isVisible ? 'lhero-node-g--active' : 'lhero-node-g--dim'} ${isSelected ? 'lhero-node-g--selected' : ''}`}
+            onMouseEnter={() => onHoverNode(node)}
+            onClick={() => {
+              soundFX.playPop();
+              onHoverNode(node);
+            }}
+            style={{
+              opacity: isVisible ? 1 : 0.1,
+              transform: `translate(${node.x}px, ${node.y}px) scale(${isVisible ? (isSelected ? 1.25 : 1) : 0.4})`,
+              transition: 'transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.35s ease',
+              cursor: isVisible ? 'pointer' : 'default',
+            }}
+          >
+            {/* Halo rings for ME */}
+            {node.isMe && (
+              <>
+                <circle r={node.r + 20} fill="none" stroke="var(--chalk-yellow)" strokeWidth={0.6} opacity={0.3} className="me-halo-outer" />
+                <circle r={node.r + 11} fill="none" stroke="var(--chalk-yellow)" strokeWidth={0.8} opacity={0.5} className="me-halo-inner" />
+              </>
+            )}
+
+            {/* Selection ripple ring */}
+            {isSelected && (
+              <circle
+                r={node.r + 8}
+                fill="none"
+                stroke="var(--chalk-yellow)"
+                strokeWidth={1.5}
+                strokeDasharray="3 3"
+                className="selected-node-ring"
+              />
+            )}
+
+            <circle
+              r={node.r}
+              fill={node.isMe ? 'url(#me-grad)' : (isSpouse ? 'url(#spouse-grad)' : 'url(#node-grad)')}
+              stroke={node.isMe ? '#fde047' : (isSelected ? '#fde047' : 'rgba(253,224,71,0.6)')}
+              strokeWidth={node.isMe || isSelected ? 2.5 : 1.2}
+              filter={node.isMe || isSelected ? 'url(#me-glow)' : 'url(#node-glow)'}
+            />
+
+            {/* Label */}
+            {node.label && (
+              <text
+                y={node.r + 13}
+                textAnchor="middle"
+                fill={node.isMe || isSelected ? 'var(--chalk-yellow)' : 'var(--text-secondary)'}
+                fontSize={node.isMe ? 12 : (isSelected ? 11 : 9.5)}
+                fontFamily="var(--font-sans)"
+                fontWeight={node.isMe || isSelected ? '700' : '500'}
+                letterSpacing="0.03em"
+                style={{ userSelect: 'none', pointerEvents: 'none' }}
+              >
+                {node.label}
+              </text>
+            )}
+          </g>
+        );
+      })}
+    </svg>
+  );
+}
 
 /* ─── Main Landing Page Component ───────────────────────────── */
 export default function Landing() {
@@ -209,9 +428,11 @@ export default function Landing() {
   const loadShowcaseFamily = useFamilyStore((s) => s.loadShowcaseFamily);
 
   const containerRef = useRef(null);
-  const nodeRefs     = useRef({});
-  const edgeRefs     = useRef([]);
-  const lastStage    = useRef(-1);
+
+  /* ── Interactive Stage Evolution State ─────────────────────── */
+  const [currentStage, setCurrentStage] = useState(7); // Default to full network so users see the glory immediately
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [activeNode, setActiveNode] = useState(NODES[0]); // Default to 'You'
 
   /* ── Interactive Playground State ─────────────────────────── */
   const [sandboxInput, setSandboxInput] = useState(SANDBOX_PRESETS[0].text);
@@ -220,8 +441,35 @@ export default function Landing() {
   const [activeFaq, setActiveFaq] = useState(null);
 
   /* ── Kinship Calculator Interactive State ─────────────────── */
-  const [calcRelation, setCalcRelation] = useState("Mother's Brother's Son");
+  const [calcIndex, setCalcIndex] = useState(0);
+  const activeChain = KINSHIP_CHAINS[calcIndex];
 
+  /* ── Stage Transition Handler ─────────────────────────────── */
+  const handleSelectStage = useCallback((idx) => {
+    soundFX.playPop();
+    setCurrentStage(idx);
+    // Focus the most prominent node introduced in that stage
+    const stageNodes = NODES.filter((n) => n.stage === idx);
+    if (stageNodes.length > 0) {
+      setActiveNode(stageNodes[0]);
+    }
+  }, []);
+
+  /* ── Auto Play Stage Evolution Timer ──────────────────────── */
+  useEffect(() => {
+    if (!isPlaying) return;
+    const interval = setInterval(() => {
+      setCurrentStage((prev) => {
+        const next = (prev + 1) % STAGES.length;
+        const stageNodes = NODES.filter((n) => n.stage === next);
+        if (stageNodes.length > 0) setActiveNode(stageNodes[0]);
+        return next;
+      });
+    }, 2400);
+    return () => clearInterval(interval);
+  }, [isPlaying]);
+
+  /* ── Run AI Sandbox ───────────────────────────────────────── */
   const handleRunSandbox = () => {
     soundFX.playPop();
     setSandboxProcessing(true);
@@ -230,14 +478,14 @@ export default function Landing() {
       setSandboxParsed(parsed);
       setSandboxProcessing(false);
       soundFX.playSuccess();
-    }, 450);
+    }, 400);
   };
 
+  /* ── Launch Sandbox Graph in Full Studio ───────────────────── */
   const handleLaunchSandboxInStudio = () => {
     soundFX.playSuccess();
     if (!sandboxParsed.people.length) return;
     
-    // Convert sandbox graph into familyStore state
     const peopleMap = {};
     let meId = null;
     sandboxParsed.people.forEach((p, idx) => {
@@ -276,172 +524,91 @@ export default function Landing() {
     navigate('/app');
   };
 
-  /* ── GSAP Scroll Trigger & Intro ───────────────────────────── */
+  /* ── Intro Header Animations ──────────────────────────────── */
   useEffect(() => {
     const ctx = gsap.context(() => {
-      /* Initial state: hide non-ME nodes */
-      NODES.forEach((n) => {
-        if (!n.isMe) {
-          const el = document.getElementById(`gn-${n.id}`);
-          if (el) gsap.set(el, { opacity: 0, scale: 0, transformOrigin: `${n.x}px ${n.y}px` });
-        }
-      });
-      EDGES.forEach((_, i) => {
-        const el = document.getElementById(`ge-${i}`);
-        if (el) gsap.set(el, { opacity: 0 });
-      });
-      STAGES.forEach((_, i) => {
-        if (i > 0) gsap.set(`#hs-${i}`, { opacity: 0, y: 28 });
-      });
-      gsap.set('#hs-0', { opacity: 1, y: 0 });
-
-      /* Intro: Hero animations */
-      gsap.fromTo('.lhero-status-pill',
-        { opacity: 0, y: -16 },
-        { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out', delay: 0.1 }
+      gsap.fromTo('.lhero-main-title',
+        { opacity: 0, y: 24 },
+        { opacity: 1, y: 0, duration: 0.9, ease: 'power3.out', delay: 0.1 }
       );
-      gsap.fromTo('.lhero-eyebrow',
+      gsap.fromTo('.lhero-main-desc',
         { opacity: 0, y: 20 },
-        { opacity: 1, y: 0, duration: 1, ease: 'power3.out', delay: 0.2 }
-      );
-      gsap.fromTo('.lhero-text-wrap',
-        { opacity: 0, y: 32 },
-        { opacity: 1, y: 0, duration: 1.1, ease: 'power3.out', delay: 0.4 }
+        { opacity: 1, y: 0, duration: 0.9, ease: 'power3.out', delay: 0.25 }
       );
       gsap.fromTo('.lhero-cta-wrap',
-        { opacity: 0, y: 20 },
-        { opacity: 1, y: 0, duration: 1, ease: 'power3.out', delay: 0.6 }
+        { opacity: 0, y: 16 },
+        { opacity: 1, y: 0, duration: 0.9, ease: 'power3.out', delay: 0.4 }
       );
-
-      /* Build Master Scroll Timeline */
-      const TOTAL = STAGES.length;
-      const revealNodes = (stageIdx) => {
-        const stageNodes = NODES.filter((n) => n.stage === stageIdx);
-        const stageEdges = EDGES.map((e, i) => ({ e, i })).filter(({ e: [a, b] }) => {
-          const na = NODES.find((n) => n.id === a);
-          const nb = NODES.find((n) => n.id === b);
-          return Math.max(na?.stage || 0, nb?.stage || 0) === stageIdx;
-        });
-        const sub = gsap.timeline();
-        stageNodes.forEach((n, ni) => {
-          sub.fromTo(
-            `#gn-${n.id}`,
-            { opacity: 0, scale: 0 },
-            { opacity: 1, scale: 1, duration: 0.5, ease: 'back.out(1.6)', transformOrigin: `${n.x}px ${n.y}px`, delay: ni * 0.06 },
-            0
-          );
-        });
-        stageEdges.forEach(({ i }, ei) => {
-          sub.fromTo(
-            `#ge-${i}`,
-            { opacity: 0 },
-            { opacity: 1, duration: 0.4, ease: 'power2.out', delay: ei * 0.05 },
-            0.1
-          );
-        });
-        return sub;
-      };
-
-      const master = gsap.timeline({
-        scrollTrigger: {
-          trigger: '.lhero-outer',
-          start: 'top top',
-          end: 'bottom bottom',
-          scrub: 0.5,
-          onUpdate: (self) => {
-            const rawStage = Math.min(TOTAL - 1, Math.floor(self.progress * TOTAL));
-            if (rawStage !== lastStage.current) {
-              const prev = lastStage.current;
-              lastStage.current = rawStage;
-              if (prev >= 0 && prev !== rawStage) {
-                gsap.to(`#hs-${prev}`, { opacity: 0, y: -20, duration: 0.35, ease: 'power2.in' });
-              }
-              gsap.fromTo(`#hs-${rawStage}`,
-                { opacity: 0, y: 24 },
-                { opacity: 1, y: 0, duration: 0.45, ease: 'power3.out' }
-              );
-            }
-          },
-        },
-      });
-
-      for (let s = 1; s < TOTAL; s++) {
-        master.add(revealNodes(s), (s - 1) * 1.0);
-      }
+      gsap.fromTo('.lhero-stepper-wrap',
+        { opacity: 0, y: 18 },
+        { opacity: 1, y: 0, duration: 0.9, ease: 'power3.out', delay: 0.55 }
+      );
     }, containerRef);
 
     return () => ctx.revert();
   }, []);
 
+  const curStageInfo = STAGES[currentStage] || STAGES[7];
+
   return (
     <div className="landing-page" ref={containerRef}>
-      {/* ── TOP ANNOUNCEMENT RIBBON ─────────────────────────── */}
+      
+      {/* ── TOP ANNOUNCEMENT RIBBON (Cleanly placed below Navbar) ── */}
       <div className="lannouncement">
         <div className="lannouncement-inner">
           <span className="live-pulse-dot" style={{ width: 6, height: 6 }} />
-          <span className="lannouncement-badge">NEW</span>
+          <span className="lannouncement-badge">NEW RELEASE</span>
           <span className="lannouncement-text">
-            Announcing Kinsutra AI 2.0 • Anthropological Kinship Engine & Voice Synthesis
+            Announcing Kinsutra AI 2.0 • Anthropological Kinship Algebra & Multi-Dialect Synthesis
           </span>
           <button
             className="lannouncement-link"
             onClick={() => {
               soundFX.playPop();
-              const el = document.querySelector('.lsandbox');
-              el?.scrollIntoView({ behavior: 'smooth' });
+              document.querySelector('.lsandbox')?.scrollIntoView({ behavior: 'smooth' });
             }}
           >
-            Try Interactive Sandbox →
+            Try Interactive AI Sandbox ↓
           </button>
         </div>
       </div>
 
-      {/* ── PINNED SCROLL HERO ──────────────────────────────── */}
-      <div className="lhero-outer">
-        <div className="lhero-sticky">
-          
-          {/* Ambient organic background lighting */}
-          <div className="lhero-bg" aria-hidden="true">
-            <div className="lhero-blob lhero-blob--1" />
-            <div className="lhero-blob lhero-blob--2" />
-            <div className="lhero-blob lhero-blob--3" />
-          </div>
+      {/* ── FLAGSHIP HERO SECTION ───────────────────────────── */}
+      <section className="lhero-section">
+        
+        {/* Ambient organic lighting blobs */}
+        <div className="lhero-bg" aria-hidden="true">
+          <div className="lhero-blob lhero-blob--1" />
+          <div className="lhero-blob lhero-blob--2" />
+          <div className="lhero-blob lhero-blob--3" />
+        </div>
 
-          {/* Left: Hero Headline & Pinned Text */}
+        <div className="lhero-container">
+          
+          {/* Left Column: Headline, Genesis Stepper & CTAs */}
           <div className="lhero-content">
+            
             <div className="lhero-status-pill">
               <span className="live-pulse-dot" />
-              <span>LOUNSBURY KINSHIP ALGEBRA 2.0 • GEMINI AI ENGINE</span>
+              <span>LOUNSBURY KINSHIP ALGEBRA 2.0 • GEMINI AI GRAPH</span>
             </div>
 
-            <p className="lhero-eyebrow">The Generational Operating System</p>
+            <h1 className="lhero-main-title">
+              Your Family is Not a Simple Tree.<br />
+              <span className="gradient-headline">It is a Living Relational Network.</span>
+            </h1>
 
-            <div className="lhero-text-wrap">
-              {STAGES.map((stage, i) => (
-                <div key={i} className="lhero-stage" id={`hs-${i}`}>
-                  <h1 className="lhero-heading">
-                    {stage.heading.split('\n').map((line, li) => (
-                      <span key={li} className="lhero-heading-line">
-                        {line}
-                      </span>
-                    ))}
-                  </h1>
-                  {stage.sub && (
-                    <p className="lhero-sub">{stage.sub}</p>
-                  )}
-                </div>
-              ))}
-            </div>
+            <p className="lhero-main-desc">
+              Map multigenerational ancestry with mathematical precision. Formalized by Lounsbury Kinship Algebra, Dravidian &amp; Indo-Aryan classifications, and multimodal AI speech-to-tree synthesis.
+            </p>
 
-            {/* High-Converting Startup CTA Group */}
+            {/* High-Converting Primary CTAs */}
             <div className="lhero-cta-wrap">
               <button
                 className="lhero-btn shimmer-btn"
                 onClick={() => {
                   soundFX.playPop();
-                  if (!isOnboarded) {
-                    loadShowcaseFamily();
-                  }
+                  if (!isOnboarded) loadShowcaseFamily();
                   navigate('/app');
                 }}
                 id="hero-start-btn"
@@ -475,41 +642,110 @@ export default function Landing() {
               </div>
               <span className="lhero-trust-sep">·</span>
               <div className="lhero-trust-item">
-                <span>Zero Data Sold</span>
+                <span>100% Client-Side Encrypted</span>
               </div>
             </div>
+
+            {/* ── Interactive Genesis Stepper Controller ───────── */}
+            <div className="lhero-stepper-wrap">
+              
+              <div className="lstepper-header">
+                <div className="lstepper-title-row">
+                  <span className="lstepper-pill-tag">{curStageInfo.tag}</span>
+                  <span className="lstepper-title">{curStageInfo.heading}</span>
+                </div>
+
+                <div className="lstepper-controls">
+                  <button
+                    className={`lstepper-play-btn ${isPlaying ? 'lstepper-play-btn--active' : ''}`}
+                    onClick={() => {
+                      soundFX.playPop();
+                      setIsPlaying(!isPlaying);
+                    }}
+                    title={isPlaying ? 'Pause Genesis Evolution' : 'Auto Play Genesis Evolution'}
+                  >
+                    {isPlaying ? '⏸ Pause' : '▶ Play Genesis'}
+                  </button>
+                  <button
+                    className="lstepper-full-btn"
+                    onClick={() => handleSelectStage(7)}
+                    title="View Full 25+ Node Dynasty"
+                  >
+                    Full Dynasty
+                  </button>
+                </div>
+              </div>
+
+              <p className="lstepper-desc">{curStageInfo.desc}</p>
+
+              {/* Stage Pills Scrubber */}
+              <div className="lstepper-pills">
+                {STAGES.map((s) => (
+                  <button
+                    key={s.idx}
+                    className={`lstepper-pill ${currentStage === s.idx ? 'lstepper-pill--active' : ''}`}
+                    onClick={() => handleSelectStage(s.idx)}
+                  >
+                    {s.short}
+                  </button>
+                ))}
+              </div>
+
+            </div>
+
           </div>
 
-          {/* Right: Growing SVG Graph with Floating Telemetry Badges */}
+          {/* Right Column: Interactive Living SVG Canvas with Telemetry HUD */}
           <div className="lhero-graph-wrap">
-            <HeroGraph nodeRefs={nodeRefs} edgeRefs={edgeRefs} />
+            
+            <HeroGraph
+              currentStage={currentStage}
+              onHoverNode={(node) => setActiveNode(node)}
+              activeNode={activeNode}
+            />
 
-            {/* Floating Glass Telemetry Badges */}
-            <div className="lhero-glass-badge lhero-glass-badge--top float-slow">
-              <span className="live-pulse-dot" style={{ width: 6, height: 6 }} />
-              <div>
-                <p className="lbadge-title">AI Kinship Resolver</p>
-                <p className="lbadge-desc">Parallel Cousin (FaBrSo) • 99.8% match</p>
+            {/* Active Kinship Telemetry Card (Floating Top-Right) */}
+            {activeNode && (
+              <div className="lhero-glass-badge lhero-glass-badge--top float-slow">
+                <div className="lbadge-header-row">
+                  <span className="live-pulse-dot" style={{ width: 7, height: 7 }} />
+                  <span className="lbadge-tag">{activeNode.role}</span>
+                </div>
+                <div className="lbadge-body">
+                  <h4 className="lbadge-person-name">{activeNode.name}</h4>
+                  <p className="lbadge-formula">
+                    Algebra: <code>{activeNode.formula}</code>
+                  </p>
+                  <div className="lbadge-vernacular-row">
+                    <span>Telugu: <strong>{activeNode.telugu}</strong></span>
+                    <span>·</span>
+                    <span>Hindi: <strong>{activeNode.hindi}</strong></span>
+                  </div>
+                </div>
               </div>
-            </div>
+            )}
 
-            <div className="lhero-glass-badge lhero-glass-badge--bottom float-slow" style={{ animationDelay: '2s' }}>
+            {/* Lounsbury Mathematical Engine Chip (Floating Bottom-Left) */}
+            <div className="lhero-glass-badge lhero-glass-badge--bottom float-slow" style={{ animationDelay: '1.5s' }}>
               <span className="lbadge-icon">🧬</span>
               <div>
-                <p className="lbadge-title">Lounsbury Reduction</p>
-                <p className="lbadge-desc"><code>M+B+S-</code> → Menarikam (Dravidian)</p>
+                <p className="lbadge-title">Lounsbury Reduction 2.0</p>
+                <p className="lbadge-desc">
+                  Active Stage: <code>{curStageInfo.tag}</code> • 0ms Client Latency
+                </p>
               </div>
             </div>
-          </div>
 
-          {/* Scroll Hint */}
-          <div className="lhero-scroll-hint">
-            <div className="lhero-scroll-line" />
-            <span className="lhero-scroll-label">Scroll down to explore graph synthesis</span>
+            {/* Hint to tap nodes */}
+            <div className="lhero-graph-hint">
+              <span>✦ Hover or tap nodes to inspect kinship formulas &amp; regional terms</span>
+            </div>
+
           </div>
 
         </div>
-      </div>
+
+      </section>
 
       {/* ── INTERACTIVE LIVE AI KINSHIP SANDBOX ─────────────── */}
       <section className="lsandbox" id="sandbox-section">
@@ -622,7 +858,7 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* ── BENTO GRID: 100M STARTUP TECHNOLOGY SHOWCASE ────── */}
+      {/* ── BENTO GRID: STARTUP ARCHITECTURE SHOWCASE ───────── */}
       <section className="lfeat">
         <div className="lfeat-inner">
           <div className="lfeat-header">
@@ -670,7 +906,7 @@ export default function Landing() {
             {/* Bento 4: Regional Vernacular Dialects */}
             <div className="lbento-card">
               <div className="lbento-pill">CULTURAL INTELLIGENCE</div>
-              <h3 className="lbento-title">5 Regional Indian Terminology</h3>
+              <h3 className="lbento-title">5 Regional Indian Languages</h3>
               <p className="lbento-desc">
                 Instant translation of kinship relationships into exact vernacular terms: <strong>Telugu, Hindi, Tamil, Kannada, and Malayalam</strong>. Never confuse a <em>Chacha</em> with a <em>Mama</em> again.
               </p>
@@ -687,6 +923,7 @@ export default function Landing() {
 
             {/* Bento 6: Privacy by Design */}
             <div className="lbento-card lbento-card--large">
+              <div className="lbento-card-bg" />
               <div className="lbento-pill">ZERO-KNOWLEDGE PRIVACY</div>
               <h3 className="lbento-title">Your Family Story Stays Yours</h3>
               <p className="lbento-desc">
@@ -699,66 +936,79 @@ export default function Landing() {
       </section>
 
       {/* ── INTERACTIVE KINSHIP CALCULATOR WIDGET ────────────── */}
-      <section className="lcalc-section">
+      <section className="lcalc-section" id="calc-section">
         <div className="lcalc-inner">
           <div className="lcalc-header">
             <span className="live-pulse-dot" />
             <span className="lcalc-eyebrow">INTERACTIVE KINSHIP CALCULATOR</span>
             <h2 className="lcalc-title">What is your exact relation?</h2>
-            <p className="lcalc-desc">Select any relationship chain to see the formal algebraic reduction and cultural titles.</p>
+            <p className="lcalc-desc">
+              Select any relationship chain below to see the formal algebraic reduction, anthropological classification, and cultural regional titles.
+            </p>
           </div>
 
           <div className="lcalc-box">
             <div className="lcalc-selector-row">
-              <label className="lcalc-label">Choose Relationship Chain:</label>
+              <label className="lcalc-label">Choose Kinship Chain:</label>
               <select
                 className="lcalc-select"
-                value={calcRelation}
+                value={calcIndex}
                 onChange={(e) => {
                   soundFX.playPop();
-                  setCalcRelation(e.target.value);
+                  setCalcIndex(Number(e.target.value));
                 }}
               >
-                <option value="Mother's Brother's Son">Mother's Brother's Son (MoBrSo)</option>
-                <option value="Father's Brother's Son">Father's Brother's Son (FaBrSo)</option>
-                <option value="Father's Sister's Daughter">Father's Sister's Daughter (FaSiDa)</option>
-                <option value="Mother's Sister's Son">Mother's Sister's Son (MoSiSo)</option>
-                <option value="Father's Younger Brother">Father's Younger Brother (FaYoBr)</option>
-                <option value="Mother's Brother">Mother's Brother (MoBr)</option>
+                {KINSHIP_CHAINS.map((chain, idx) => (
+                  <option key={idx} value={idx}>
+                    {chain.label}
+                  </option>
+                ))}
               </select>
             </div>
 
+            {/* Result Cards Grid */}
             <div className="lcalc-result-grid">
+              
               <div className="lcalc-stat-card">
                 <span className="lcalc-stat-label">Formal Classification</span>
-                <span className="lcalc-stat-val">
-                  {calcRelation.includes("Brother's Son") && calcRelation.startsWith("Mother") ? "Cross-Cousin (Menarikam)" :
-                   calcRelation.includes("Brother's Son") && calcRelation.startsWith("Father") ? "Parallel Cousin (Dayadi)" :
-                   calcRelation.includes("Sister") ? "Cross-Cousin (Menarikam)" : "Unilateral Uncle"}
+                <span className="lcalc-stat-val lcalc-stat-val--highlight">
+                  {activeChain.classification}
                 </span>
+                <span className="lcalc-stat-sub">{activeChain.significance}</span>
               </div>
+
               <div className="lcalc-stat-card">
                 <span className="lcalc-stat-label">Algebraic Reduction</span>
                 <span className="lcalc-stat-val">
-                  {calcRelation.startsWith("Mother") ? "M+ B0 S-" : "F+ B0 S-"}
+                  <code>{activeChain.reduction}</code>
                 </span>
+                <span className="lcalc-stat-sub">Chain: {activeChain.formula}</span>
               </div>
+
               <div className="lcalc-stat-card">
                 <span className="lcalc-stat-label">Telugu Cultural Term</span>
-                <span className="lcalc-stat-val">
-                  {calcRelation.includes("Brother's Son") && calcRelation.startsWith("Mother") ? "Bava / Maridi" :
-                   calcRelation.includes("Brother's Son") && calcRelation.startsWith("Father") ? "Anna / Thambi" :
-                   calcRelation.includes("Younger") ? "Babai / Chinanna" : "Māmā"}
+                <span className="lcalc-stat-val lcalc-stat-val--accent">
+                  {activeChain.telugu}
                 </span>
+                <span className="lcalc-stat-sub">Dravidian Kinship Classification</span>
               </div>
+
               <div className="lcalc-stat-card">
                 <span className="lcalc-stat-label">Hindi Cultural Term</span>
                 <span className="lcalc-stat-val">
-                  {calcRelation.includes("Brother's Son") && calcRelation.startsWith("Mother") ? "Mamera Bhai" :
-                   calcRelation.includes("Brother's Son") && calcRelation.startsWith("Father") ? "Chachera Bhai" :
-                   calcRelation.includes("Younger") ? "Chacha" : "Mama"}
+                  {activeChain.hindi}
                 </span>
+                <span className="lcalc-stat-sub">Indo-Aryan Kinship Classification</span>
               </div>
+
+              <div className="lcalc-stat-card">
+                <span className="lcalc-stat-label">Tamil Cultural Term</span>
+                <span className="lcalc-stat-val">
+                  {activeChain.tamil}
+                </span>
+                <span className="lcalc-stat-sub">Classical Dravidian Term</span>
+              </div>
+
             </div>
           </div>
         </div>
@@ -823,7 +1073,7 @@ export default function Landing() {
       </section>
 
       {/* ── PRICING MATRIX ───────────────────────────────────── */}
-      <section className="lpricing">
+      <section className="lpricing" id="pricing-section">
         <div className="lpricing-inner">
           <p className="lpricing-eyebrow">Simple Transparent Pricing</p>
           <h2 className="lpricing-heading">Start free, upgrade for heirlooms</h2>
@@ -860,9 +1110,9 @@ export default function Landing() {
               <p className="lpricing-desc">For family leaders preserving multigenerational archives.</p>
               <div className="lpricing-price">$12 <span>/ month</span></div>
               <ul className="lpricing-features">
-                <li>✓ Unlimited Family Members & Generations</li>
-                <li>✓ Multimodal AI Voice & Excel Ingestion</li>
-                <li>✓ 300 DPI Museum-Grade SVG & Poster Export</li>
+                <li>✓ Unlimited Family Members &amp; Generations</li>
+                <li>✓ Multimodal AI Voice &amp; Excel Ingestion</li>
+                <li>✓ 300 DPI Museum-Grade SVG &amp; Poster Export</li>
                 <li>✓ Multi-Family Network Switching (In-laws)</li>
                 <li>✓ 5 Regional Languages Terminology</li>
               </ul>
@@ -891,9 +1141,12 @@ export default function Landing() {
               </ul>
               <button
                 className="lpricing-btn"
-                onClick={() => navigate('/app')}
+                onClick={() => {
+                  soundFX.playPop();
+                  navigate('/app');
+                }}
               >
-                Contact Archive Specialist
+                Explore Dynasty Studio
               </button>
             </div>
 
@@ -1001,15 +1254,15 @@ export default function Landing() {
           <div className="lfooter-brand-col">
             <div className="lfooter-brand">
               <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                <circle cx="10" cy="10" r="3" fill="var(--accent)" />
-                <circle cx="4" cy="4" r="1.5" fill="var(--accent)" opacity="0.6"/>
-                <circle cx="16" cy="4" r="1.5" fill="var(--accent)" opacity="0.6"/>
-                <circle cx="4" cy="16" r="1.5" fill="var(--accent)" opacity="0.5"/>
-                <circle cx="16" cy="16" r="1.5" fill="var(--accent)" opacity="0.5"/>
-                <line x1="10" y1="10" x2="4" y2="4" stroke="var(--accent)" strokeWidth="1" opacity="0.4"/>
-                <line x1="10" y1="10" x2="16" y2="4" stroke="var(--accent)" strokeWidth="1" opacity="0.4"/>
-                <line x1="10" y1="10" x2="4" y2="16" stroke="var(--accent)" strokeWidth="1" opacity="0.3"/>
-                <line x1="10" y1="10" x2="16" y2="16" stroke="var(--accent)" strokeWidth="1" opacity="0.3"/>
+                <circle cx="10" cy="10" r="3" fill="var(--chalk-yellow)" />
+                <circle cx="4" cy="4" r="1.5" fill="var(--chalk-yellow)" opacity="0.6"/>
+                <circle cx="16" cy="4" r="1.5" fill="var(--chalk-yellow)" opacity="0.6"/>
+                <circle cx="4" cy="16" r="1.5" fill="var(--chalk-yellow)" opacity="0.5"/>
+                <circle cx="16" cy="16" r="1.5" fill="var(--chalk-yellow)" opacity="0.5"/>
+                <line x1="10" y1="10" x2="4" y2="4" stroke="var(--chalk-yellow)" strokeWidth="1" opacity="0.4"/>
+                <line x1="10" y1="10" x2="16" y2="4" stroke="var(--chalk-yellow)" strokeWidth="1" opacity="0.4"/>
+                <line x1="10" y1="10" x2="4" y2="16" stroke="var(--chalk-yellow)" strokeWidth="1" opacity="0.3"/>
+                <line x1="10" y1="10" x2="16" y2="16" stroke="var(--chalk-yellow)" strokeWidth="1" opacity="0.3"/>
               </svg>
               <span>Kinsutra AI</span>
               <span className="nav__logo-badge">v2.0</span>
@@ -1026,24 +1279,24 @@ export default function Landing() {
           <div className="lfooter-links-grid">
             <div className="lfooter-col">
               <h4>Product</h4>
-              <a href="#sandbox-section">AI Sandbox</a>
+              <button onClick={() => document.querySelector('.lsandbox')?.scrollIntoView({ behavior: 'smooth' })}>AI Sandbox</button>
               <button onClick={() => navigate('/app')}>Studio Graph</button>
               <button onClick={() => { loadShowcaseFamily(); navigate('/app'); }}>Showcase Demo</button>
               <button onClick={() => navigate('/chat')}>Family Messages</button>
             </div>
             <div className="lfooter-col">
               <h4>Kinship Science</h4>
-              <a href="#feat">Lounsbury Algebra</a>
-              <a href="#calc">Kinship Calculator</a>
-              <a href="#feat">Dravidian Menarikam</a>
-              <a href="#feat">Heirloom Printing</a>
+              <button onClick={() => document.querySelector('.lfeat')?.scrollIntoView({ behavior: 'smooth' })}>Lounsbury Algebra</button>
+              <button onClick={() => document.querySelector('.lcalc-section')?.scrollIntoView({ behavior: 'smooth' })}>Kinship Calculator</button>
+              <button onClick={() => document.querySelector('.lfeat')?.scrollIntoView({ behavior: 'smooth' })}>Dravidian Menarikam</button>
+              <button onClick={() => document.querySelector('.lfeat')?.scrollIntoView({ behavior: 'smooth' })}>Heirloom Printing</button>
             </div>
             <div className="lfooter-col">
-              <h4>Security & Legal</h4>
-              <a href="#privacy">Zero-Knowledge Cloud</a>
-              <a href="#privacy">Client-Side Encryption</a>
-              <a href="#privacy">Terms of Service</a>
-              <a href="#privacy">Privacy Policy</a>
+              <h4>Security &amp; Legal</h4>
+              <button onClick={() => document.querySelector('.lfeat')?.scrollIntoView({ behavior: 'smooth' })}>Zero-Knowledge Cloud</button>
+              <button onClick={() => document.querySelector('.lfeat')?.scrollIntoView({ behavior: 'smooth' })}>Client-Side Encryption</button>
+              <button onClick={() => navigate('/')}>Terms of Service</button>
+              <button onClick={() => navigate('/')}>Privacy Policy</button>
             </div>
           </div>
         </div>
