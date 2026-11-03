@@ -55,6 +55,7 @@ export function AddRelativeModal({ anchorId, onClose, onAdded }) {
   const [photo, setPhoto]             = useState(null);
   const [step, setStep]               = useState(1);
   const [existingPersonId, setExistingPersonId] = useState(null);
+  const [errorMsg, setErrorMsg]       = useState('');
 
   const inputRef = useRef(null);
   const fileRef  = useRef(null);
@@ -89,7 +90,11 @@ export function AddRelativeModal({ anchorId, onClose, onAdded }) {
     let targetId = existingPersonId;
 
     if (!targetId) {
-      if (!name.trim()) return;
+      if (!name.trim()) {
+        setErrorMsg('Please enter a relative name.');
+        return;
+      }
+      setErrorMsg('');
       // Check if user matched existing person
       if (matchingExisting) {
         targetId = matchingExisting.id;
@@ -371,6 +376,12 @@ export function AddRelativeModal({ anchorId, onClose, onAdded }) {
                     onChange={(e) => setEmail(e.target.value)} />
                 </div>
               </>
+            )}
+
+            {errorMsg && (
+              <div style={{ color: '#ef4444', fontSize: 13, marginBottom: 10, textAlign: 'center' }}>
+                ⚠️ {errorMsg}
+              </div>
             )}
 
             <button

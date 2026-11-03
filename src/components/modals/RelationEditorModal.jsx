@@ -4,7 +4,6 @@ import './RelationEditorModal.css';
 
 export function RelationEditorModal({ personId, onClose }) {
   const people        = useFamilyStore((s) => s.people);
-  const edges         = useFamilyStore((s) => s.edges);
   const getNeighbors  = useFamilyStore((s) => s.getNeighbors);
   const addEdge       = useFamilyStore((s) => s.addEdge);
   const removeEdge    = useFamilyStore((s) => s.removeEdge);
@@ -136,9 +135,22 @@ export function RelationEditorModal({ personId, onClose }) {
                 <p className="reledit-empty">No connections found for {person.name}. Click "+ Link Person" to connect someone.</p>
               ) : (
                 neighbors.map(({ person: neighbor, edge }) => {
+                  let defaultLabel = 'Parent';
+                  if (edge.type === RELATIONSHIP_TYPES.SPOUSE) {
+                    defaultLabel = 'Spouse';
+                  } else if (edge.type === RELATIONSHIP_TYPES.SIBLING) {
+                    defaultLabel = neighbor.gender === 'female' ? 'Sister' : 'Brother';
+                  } else if (edge.type === RELATIONSHIP_TYPES.CHILD) {
+                    defaultLabel = neighbor.gender === 'female' ? 'Daughter' : 'Son';
+                  } else if (edge.type === RELATIONSHIP_TYPES.GRANDPARENT) {
+                    defaultLabel = neighbor.gender === 'female' ? 'Grandmother' : 'Grandfather';
+                  } else if (edge.type === RELATIONSHIP_TYPES.PARENT) {
+                    defaultLabel = neighbor.gender === 'female' ? 'Mother' : 'Father';
+                  }
+
                   const currentLabel = (edge.label && edge.label !== 'parent' && edge.label !== 'Parent')
                     ? edge.label
-                    : (neighbor.gender === 'female' ? 'Mother' : 'Father');
+                    : defaultLabel;
 
                   const handleSelectChange = (val) => {
                     let type = edge.type;

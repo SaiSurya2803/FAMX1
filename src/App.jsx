@@ -1,5 +1,5 @@
-import { useEffect, useCallback, useState } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { useEffect, useState, useCallback } from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Lenis from 'lenis';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -11,6 +11,7 @@ import { Onboarding } from './pages/Onboarding';
 import { AppPage } from './pages/App';
 import { Chat } from './pages/Chat';
 import { Groups } from './pages/Groups';
+import { NotFound } from './pages/NotFound';
 import './styles/tokens.css';
 import './styles/base.css';
 
@@ -38,10 +39,8 @@ function Protected({ children }) {
 export default function App() {
   const theme = useFamilyStore((s) => s.theme);
   const setTheme = useFamilyStore((s) => s.setTheme);
-  const isOnboarded = useFamilyStore((s) => s.isOnboarded);
 
   const [paletteOpen, setPaletteOpen] = useState(false);
-  const [paletteSelectedId, setPaletteSelectedId] = useState(null);
 
   /* ── Apply theme ─────────────────────────────────────────── */
   useEffect(() => {
@@ -90,9 +89,7 @@ export default function App() {
   }, [theme, setTheme]);
 
   const handlePaletteSelect = useCallback((id) => {
-    setPaletteSelectedId(id);
     // The AppPage will pick this up if on that route
-    // For now, store it in URL or navigate to /app with state
     window.__graphFocusId = id;
     window.dispatchEvent(new CustomEvent('graph:focus', { detail: { id } }));
   }, []);
@@ -122,7 +119,7 @@ export default function App() {
         <Route path="/groups" element={
           <Protected><Groups /></Protected>
         } />
-        <Route path="*" element={<Navigate to={isOnboarded ? '/app' : '/'} replace />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
   );

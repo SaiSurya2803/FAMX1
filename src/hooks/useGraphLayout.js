@@ -13,6 +13,8 @@ export function useGraphLayout() {
   const layoutVersion = useFamilyStore((s) => s.layoutVersion);
 
   const layout = useMemo(() => {
+    // Consume layoutVersion to trigger fresh re-layout when positions are reset
+    if (layoutVersion) { /* force cache-bust */ }
     const peopleKeys = Object.keys(people);
     if (peopleKeys.length === 0) return { nodes: [], edges: [] };
 
@@ -135,7 +137,6 @@ export function useGraphLayout() {
       if (kids.length > 0) {
         // Center children under couple
         const coupleCenterX = (computed[nodeId].x + currX) / 2;
-        let kidsWidth = 0;
 
         // Calculate children layout width
         let kidX = coupleCenterX - ((kids.length - 1) * H_NODE_GAP) / 2;

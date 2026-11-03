@@ -154,42 +154,42 @@
   --scrim: rgba(8, 14, 10, 0.85);
 }
 
-/* ─── VINTAGE SCHOOLHOUSE GREEN CHALKBOARD ───────────────────── */
+/* ─── VINTAGE CLASSROOM PARCHMENT & IVORY BOARD ─────────────── */
 [data-theme="light"] {
-  --bg-base:        #15291e;
-  --bg-surface:     #1b3527;
-  --bg-elevated:    #224231;
-  --bg-overlay:     #2a503c;
-  --bg-hover:       #335f47;
+  --bg-base:        #f8f6f0;
+  --bg-surface:     #ffffff;
+  --bg-elevated:    #f1ede4;
+  --bg-overlay:     #e8e2d5;
+  --bg-hover:       #dfd7c7;
 
-  --text-primary:   #f8fafc;
-  --text-secondary: #cbd5e1;
-  --text-tertiary:  #8ea093;
-  --text-inverse:   #15291e;
+  --text-primary:   #1c2820;
+  --text-secondary: #4a5c50;
+  --text-tertiary:  #6b7d72;
+  --text-inverse:   #ffffff;
 
-  --accent:         #fde047;
-  --accent-muted:   rgba(253, 224, 71, 0.18);
-  --accent-bright:  #fef08a;
+  --accent:         #b45309;
+  --accent-muted:   rgba(180, 83, 9, 0.12);
+  --accent-bright:  #d97706;
 
-  --graph-node-fill:     #1b3527;
-  --graph-node-stroke:   rgba(255, 255, 255, 0.28);
-  --graph-node-me-fill:  #224231;
-  --graph-node-me-stroke:#fde047;
-  --graph-edge:          rgba(255, 255, 255, 0.2);
-  --graph-edge-parent:   #fde047;
-  --graph-edge-spouse:   #f472b6;
-  --graph-edge-sibling:  #38bdf8;
+  --graph-node-fill:     #ffffff;
+  --graph-node-stroke:   rgba(0, 0, 0, 0.15);
+  --graph-node-me-fill:  #fef3c7;
+  --graph-node-me-stroke:#d97706;
+  --graph-edge:          rgba(0, 0, 0, 0.2);
+  --graph-edge-parent:   #b45309;
+  --graph-edge-spouse:   #e11d48;
+  --graph-edge-sibling:  #0284c7;
 
-  --border-subtle:  rgba(255, 255, 255, 0.12);
-  --border-muted:   rgba(255, 255, 255, 0.24);
-  --border-base-c:  rgba(255, 255, 255, 0.36);
+  --border-subtle:  rgba(0, 0, 0, 0.08);
+  --border-muted:   rgba(0, 0, 0, 0.16);
+  --border-base-c:  rgba(0, 0, 0, 0.22);
 
-  --shadow-sm:  0 1px 3px rgba(0,0,0,0.5);
-  --shadow-md:  0 4px 16px rgba(0,0,0,0.6);
-  --shadow-lg:  0 12px 40px rgba(0,0,0,0.7);
-  --shadow-xl:  0 24px 64px rgba(0,0,0,0.85);
-  --shadow-glow-accent: 0 0 16px rgba(253, 224, 71, 0.35);
-  --scrim: rgba(8, 14, 10, 0.85);
+  --shadow-sm:  0 1px 3px rgba(0,0,0,0.08);
+  --shadow-md:  0 4px 16px rgba(0,0,0,0.1);
+  --shadow-lg:  0 12px 40px rgba(0,0,0,0.14);
+  --shadow-xl:  0 24px 64px rgba(0,0,0,0.18);
+  --shadow-glow-accent: 0 0 16px rgba(180, 83, 9, 0.2);
+  --scrim: rgba(18, 30, 23, 0.55);
 }
 
 /* ─── CLASSROOM BLACKBOARD & CHALK EXTENDED TOKENS ───────── */

@@ -18,13 +18,14 @@ export function Navigation({ onSearch, onToggleTheme }) {
   const location   = useLocation();
   const navigate   = useNavigate();
 
-  const theme           = useFamilyStore((s) => s.theme);
-  const meId            = useFamilyStore((s) => s.meId);
-  const people          = useFamilyStore((s) => s.people);
-  const isOnboarded     = useFamilyStore((s) => s.isOnboarded);
-  const logout          = useFamilyStore((s) => s.logout);
-  const activeFamilyId  = useFamilyStore((s) => s.activeFamilyId);
-  const families        = useFamilyStore((s) => s.families);
+  const theme              = useFamilyStore((s) => s.theme);
+  const meId               = useFamilyStore((s) => s.meId);
+  const people             = useFamilyStore((s) => s.people);
+  const isOnboarded        = useFamilyStore((s) => s.isOnboarded);
+  const logout             = useFamilyStore((s) => s.logout);
+  const activeFamilyId     = useFamilyStore((s) => s.activeFamilyId);
+  const families           = useFamilyStore((s) => s.families);
+  const loadShowcaseFamily = useFamilyStore((s) => s.loadShowcaseFamily);
 
   const currentFamily = families.find((f) => f.id === activeFamilyId) || families[0];
   const me = meId ? people[meId] : null;

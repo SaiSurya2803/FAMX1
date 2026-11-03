@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { parseGraphToken } from '../utils/graphShare';
-import { sanitizePersonName } from '../utils/aiGraphParser';
+import { parseGraphToken } from '../utils/graphShare.js';
+import { sanitizePersonName } from '../utils/aiGraphParser.js';
 
 /* ─── Extended Cultural & Global Kinship Types ─────────────── */
 export const RELATIONSHIP_TYPES = {
@@ -18,6 +18,8 @@ export const RELATIONSHIP_TYPES = {
   STEP_PARENT: 'step_parent',
   STEP_CHILD: 'step_child',
   HALF_SIBLING: 'half_sibling',
+  ADOPTED_PARENT: 'adopted_parent',
+  ADOPTED_CHILD: 'adopted_child',
 };
 
 /* Detailed Cultural Kinship Catalog (India & Global) */
@@ -184,11 +186,13 @@ export const useFamilyStore = create(
         const meId = crypto.randomUUID();
         const me = {
           id: meId,
+          memberNo: 1,
           name: personData.name,
           birthDate: personData.birthDate || '',
           birthPlace: personData.birthPlace || '',
           gender: personData.gender || 'unknown',
-          whatsapp: personData.whatsapp || '',
+          phone: personData.phone || personData.whatsapp || '',
+          whatsapp: personData.whatsapp || personData.phone || '',
           email: personData.email || '',
           photo: personData.photo || null,
           isMe: true,
@@ -199,6 +203,9 @@ export const useFamilyStore = create(
           id: 'default-fam',
           name: `${personData.name.split(' ')[0]}'s Family Network`,
           code: generateFamilyCode(),
+          meId,
+          people: { [meId]: me },
+          edges: [],
         };
 
         set({
@@ -208,6 +215,7 @@ export const useFamilyStore = create(
           families: [defaultFam],
           people: { [meId]: me },
           edges: [],
+          nodePositions: {},
         });
 
         return meId;
@@ -723,24 +731,26 @@ export const useFamilyStore = create(
 
       addPerson: (data) => {
         const cleanName = sanitizePersonName(data.name) || 'Unknown';
-        const nameKey = cleanName.toLowerCase();
         const { people } = get();
 
-        // Check if person with same name already exists
-        const existing = Object.values(people).find(
-          (p) => sanitizePersonName(p.name).toLowerCase() === nameKey
-        );
+        // Optional name-based deduplication (used by bulk parsers)
+        if (data.deduplicateByName) {
+          const nameKey = cleanName.toLowerCase();
+          const existing = Object.values(people).find(
+            (p) => sanitizePersonName(p.name).toLowerCase() === nameKey
+          );
 
-        if (existing) {
-          if (existing.gender === 'unknown' && data.gender && data.gender !== 'unknown') {
-            set((state) => ({
-              people: {
-                ...state.people,
-                [existing.id]: { ...state.people[existing.id], gender: data.gender, name: cleanName },
-              },
-            }));
+          if (existing) {
+            if (existing.gender === 'unknown' && data.gender && data.gender !== 'unknown') {
+              set((state) => ({
+                people: {
+                  ...state.people,
+                  [existing.id]: { ...state.people[existing.id], gender: data.gender, name: cleanName },
+                },
+              }));
+            }
+            return existing.id;
           }
-          return existing.id;
         }
 
         const id = crypto.randomUUID();
@@ -912,6 +922,7 @@ export const useFamilyStore = create(
       sendMessage: (fromId, toId, text, groupId = null) => {
         const msg = {
           id: crypto.randomUUID(),
+          familyId: get().activeFamilyId,
           fromId, toId, groupId,
           text, timestamp: Date.now(), read: false,
         };
@@ -927,13 +938,28 @@ export const useFamilyStore = create(
       },
 
       createGroup: (name, memberIds, description = '') => {
-        const group = { id: crypto.randomUUID(), name, memberIds, description, createdAt: Date.now() };
+        const group = {
+          id: crypto.randomUUID(),
+          familyId: get().activeFamilyId,
+          name,
+          memberIds,
+          description,
+          createdAt: Date.now(),
+        };
         set((state) => ({ groups: [...state.groups, group] }));
         return group.id;
       },
 
       addEvent: (title, date, type, personIds, description = '') => {
-        const event = { id: crypto.randomUUID(), title, date, type, personIds, description };
+        const event = {
+          id: crypto.randomUUID(),
+          familyId: get().activeFamilyId,
+          title,
+          date,
+          type,
+          personIds,
+          description,
+        };
         set((state) => ({ events: [...state.events, event] }));
         return event.id;
       },
@@ -984,8 +1010,8 @@ export const useFamilyStore = create(
           visited.add(id);
           if (gen > maxUp) maxUp = gen;
           edges
-            .filter((e) => e.to === id && e.type === RELATIONSHIP_TYPES.PARENT)
-            .forEach((e) => queue.push({ id: e.from, gen: gen + 1 }));
+            .filter((e) => (e.to === id && e.type === RELATIONSHIP_TYPES.PARENT) || (e.from === id && e.type === RELATIONSHIP_TYPES.CHILD))
+            .forEach((e) => queue.push({ id: e.type === RELATIONSHIP_TYPES.CHILD ? e.to : e.from, gen: gen + 1 }));
         }
         let maxDown = 0;
         const queue2 = [{ id: meId, gen: 0 }];
@@ -996,8 +1022,8 @@ export const useFamilyStore = create(
           visited2.add(id);
           if (gen > maxDown) maxDown = gen;
           edges
-            .filter((e) => e.from === id && e.type === RELATIONSHIP_TYPES.CHILD)
-            .forEach((e) => queue2.push({ id: e.to, gen: gen + 1 }));
+            .filter((e) => (e.from === id && e.type === RELATIONSHIP_TYPES.PARENT) || (e.to === id && e.type === RELATIONSHIP_TYPES.CHILD))
+            .forEach((e) => queue2.push({ id: e.type === RELATIONSHIP_TYPES.CHILD ? e.from : e.to, gen: gen + 1 }));
         }
         return maxUp + maxDown + 1;
       },
@@ -1005,7 +1031,7 @@ export const useFamilyStore = create(
     {
       name: 'familygraph-store',
       version: 9,
-      migrate: (persistedState, version) => {
+      migrate: (persistedState, _version) => {
         // v8 → v9: sanitizePersonName is handled by onRehydrateStorage
         // Just pass state through; rehydration purger cleans everything
         return persistedState;

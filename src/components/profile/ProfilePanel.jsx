@@ -1,5 +1,4 @@
-import { useEffect, useRef, useState, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useRef, useState } from 'react';
 import { useFamilyStore } from '../../store/familyStore';
 import { deriveRelationship } from '../../utils/relationshipEngine';
 import { soundFX } from '../../utils/soundEffects';
@@ -33,11 +32,6 @@ function calculateAge(birthDateStr, deathDateStr) {
   } catch { return null; }
 }
 
-function genderLabel(g) {
-  const map = { male: 'Male 👨', female: 'Female 👩', other: 'Other 🧑', unknown: '—' };
-  return map[g] || '—';
-}
-
 function cleanHandle(val) {
   if (!val) return '';
   return val.trim().replace(/^@/, '').replace(/^https?:\/\/(www\.)?(instagram\.com|facebook\.com|snapchat\.com\/add)\//i, '').replace(/\/$/, '');
@@ -46,23 +40,20 @@ function cleanHandle(val) {
 export function ProfilePanel({ personId, onClose, onAddRelative, onEditRelations }) {
   const panelRef  = useRef(null);
   const fileRef   = useRef(null);
-  const navigate  = useNavigate();
   const [editing, setEditing] = useState(false);
 
   const people       = useFamilyStore((s) => s.people);
   const edges        = useFamilyStore((s) => s.edges);
   const meId         = useFamilyStore((s) => s.meId);
-  const getNeighbors = useFamilyStore((s) => s.getNeighbors);
   const updatePerson = useFamilyStore((s) => s.updatePerson);
   const deletePerson = useFamilyStore((s) => s.deletePerson);
 
   const person    = personId ? people[personId] : null;
-  const neighbors = personId ? getNeighbors(personId) : [];
   const isMe      = person?.id === meId;
 
   // Derive Canonical Relationship & Path Explanation from Graph
   const derivedRel = (meId && personId) ? deriveRelationship(meId, personId, people, edges) : null;
-  const relToMe = isMe ? 'YOU (KAMU)' : (derivedRel?.culturalTerm || derivedRel?.displayName || 'Family Relative');
+  const relToMe = isMe ? 'YOU' : (derivedRel?.culturalTerm || derivedRel?.displayName || 'Family Relative');
 
   // Local edit form state
   const [form, setForm] = useState({});
@@ -130,7 +121,6 @@ export function ProfilePanel({ personId, onClose, onAddRelative, onEditRelations
 
   // Clean contact numbers & handles
   const rawPhone = displayPerson.phone || displayPerson.whatsapp || '';
-  const cleanPhoneDigits = rawPhone.replace(/\D/g, '');
   const telUrl = rawPhone ? `tel:${rawPhone.replace(/\s+/g, '')}` : null;
 
   // WhatsApp suite
@@ -571,7 +561,7 @@ export function ProfilePanel({ personId, onClose, onAddRelative, onEditRelations
             className="profile-panel__btn profile-panel__btn--secondary"
             onClick={() => {
               soundFX.playPop();
-              onEditRelations && onEditRelations(personId);
+              onEditRelations?.(personId);
             }}
           >
             🔗 Manage & Edit Relations

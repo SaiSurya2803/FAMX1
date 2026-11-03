@@ -6,7 +6,7 @@
  * and multi-regional terminology (Hindi, Telugu, Tamil, Kannada, Malayalam).
  */
 
-import { RELATIONSHIP_TYPES } from '../store/familyStore';
+import { RELATIONSHIP_TYPES } from '../store/familyStore.js';
 
 const ORDINAL_SUFFIXES = { 1: '1st', 2: '2nd', 3: '3rd' };
 function getOrdinal(n) {
@@ -72,15 +72,104 @@ export function deriveRelationship(meId, targetId, people = {}, edges = []) {
             isMarriageRelative: true,
           };
         }
-        if (directEdge.type === RELATIONSHIP_TYPES.SIBLING) {
+        if (directEdge.type === RELATIONSHIP_TYPES.SIBLING || directEdge.type === RELATIONSHIP_TYPES.HALF_SIBLING) {
+          const isHalf = directEdge.type === RELATIONSHIP_TYPES.HALF_SIBLING;
           return {
-            relationship: isFemale ? 'SISTER' : 'BROTHER',
-            displayName: isFemale ? 'Sister' : 'Brother',
+            relationship: isFemale ? (isHalf ? 'HALF_SISTER' : 'SISTER') : (isHalf ? 'HALF_BROTHER' : 'BROTHER'),
+            displayName: isFemale ? (isHalf ? 'Half-Sister' : 'Sister') : (isHalf ? 'Half-Brother' : 'Brother'),
             culturalTerm: isFemale ? 'Sister (Behen / Akka / Tangai)' : 'Brother (Bhai / Anna / Thambi)',
             path: ['YOU', target?.name || 'Target'],
             side: 'NUCLEAR',
             isBloodRelative: true,
             isMarriageRelative: false,
+          };
+        }
+        if (directEdge.type === RELATIONSHIP_TYPES.GRANDPARENT) {
+          return {
+            relationship: isFromMe ? (isFemale ? 'GRANDDAUGHTER' : 'GRANDSON') : (isFemale ? 'GRANDMOTHER' : 'GRANDFATHER'),
+            displayName: isFromMe ? (isFemale ? 'Granddaughter' : 'Grandson') : (isFemale ? 'Grandmother' : 'Grandfather'),
+            culturalTerm: isFromMe ? (isFemale ? 'Granddaughter (Poti / Manavaraalu)' : 'Grandson (Pota / Manavadu)') : (isFemale ? 'Grandmother (Dadi / Nani / Paati)' : 'Grandfather (Dada / Nana / Thatha)'),
+            path: ['YOU', target?.name || 'Target'],
+            side: isFromMe ? 'NUCLEAR' : 'PATERNAL',
+            isBloodRelative: true,
+            isMarriageRelative: false,
+          };
+        }
+        if (directEdge.type === RELATIONSHIP_TYPES.GRANDCHILD) {
+          return {
+            relationship: isFromMe ? (isFemale ? 'GRANDMOTHER' : 'GRANDFATHER') : (isFemale ? 'GRANDDAUGHTER' : 'GRANDSON'),
+            displayName: isFromMe ? (isFemale ? 'Grandmother' : 'Grandfather') : (isFemale ? 'Granddaughter' : 'Grandson'),
+            culturalTerm: isFromMe ? (isFemale ? 'Grandmother (Dadi / Nani / Paati)' : 'Grandfather (Dada / Nana / Thatha)') : (isFemale ? 'Granddaughter (Poti / Manavaraalu)' : 'Grandson (Pota / Manavadu)'),
+            path: ['YOU', target?.name || 'Target'],
+            side: isFromMe ? 'PATERNAL' : 'NUCLEAR',
+            isBloodRelative: true,
+            isMarriageRelative: false,
+          };
+        }
+        if (directEdge.type === RELATIONSHIP_TYPES.UNCLE_AUNT) {
+          return {
+            relationship: isFromMe ? (isFemale ? 'NIECE' : 'NEPHEW') : (isFemale ? 'AUNT' : 'UNCLE'),
+            displayName: isFromMe ? (isFemale ? 'Niece' : 'Nephew') : (isFemale ? 'Aunt' : 'Uncle'),
+            culturalTerm: isFromMe ? (isFemale ? 'Niece (Bhatiji / Bhanji)' : 'Nephew (Bhatija / Bhanja)') : (isFemale ? 'Aunt (Chachi / Bua / Masi / Pinni)' : 'Uncle (Chacha / Mama / Kaka / Babai)'),
+            path: ['YOU', target?.name || 'Target'],
+            side: 'PATERNAL',
+            isBloodRelative: true,
+            isMarriageRelative: false,
+          };
+        }
+        if (directEdge.type === RELATIONSHIP_TYPES.NEPHEW_NIECE) {
+          return {
+            relationship: isFromMe ? (isFemale ? 'AUNT' : 'UNCLE') : (isFemale ? 'NIECE' : 'NEPHEW'),
+            displayName: isFromMe ? (isFemale ? 'Aunt' : 'Uncle') : (isFemale ? 'Niece' : 'Nephew'),
+            culturalTerm: isFromMe ? (isFemale ? 'Aunt (Chachi / Bua / Masi / Pinni)' : 'Uncle (Chacha / Mama / Kaka / Babai)') : (isFemale ? 'Niece (Bhatiji / Bhanji)' : 'Nephew (Bhatija / Bhanja)'),
+            path: ['YOU', target?.name || 'Target'],
+            side: 'PATERNAL',
+            isBloodRelative: true,
+            isMarriageRelative: false,
+          };
+        }
+        if (directEdge.type === RELATIONSHIP_TYPES.COUSIN) {
+          return {
+            relationship: 'COUSIN',
+            displayName: 'Cousin',
+            culturalTerm: 'Cousin (Bhai / Behen / Bava / Vadina)',
+            path: ['YOU', target?.name || 'Target'],
+            side: 'PATERNAL',
+            isBloodRelative: true,
+            isMarriageRelative: false,
+          };
+        }
+        if (directEdge.type === RELATIONSHIP_TYPES.IN_LAW) {
+          return {
+            relationship: isFemale ? 'SISTER_IN_LAW' : 'BROTHER_IN_LAW',
+            displayName: isFemale ? 'Sister-in-law' : 'Brother-in-law',
+            culturalTerm: isFemale ? 'Sister-in-law (Bhabhi / Vadinni)' : 'Brother-in-law (Bava / Jija / Co-brother)',
+            path: ['YOU', target?.name || 'Target'],
+            side: 'IN_LAW',
+            isBloodRelative: false,
+            isMarriageRelative: true,
+          };
+        }
+        if (directEdge.type === RELATIONSHIP_TYPES.STEP_PARENT) {
+          return {
+            relationship: isFromMe ? (isFemale ? 'STEP_DAUGHTER' : 'STEP_SON') : (isFemale ? 'STEP_MOTHER' : 'STEP_FATHER'),
+            displayName: isFromMe ? (isFemale ? 'Stepdaughter' : 'Stepson') : (isFemale ? 'Step-Mother' : 'Step-Father'),
+            culturalTerm: isFromMe ? (isFemale ? 'Stepdaughter' : 'Stepson') : (isFemale ? 'Step-Mother' : 'Step-Father'),
+            path: ['YOU', target?.name || 'Target'],
+            side: 'NUCLEAR',
+            isBloodRelative: false,
+            isMarriageRelative: true,
+          };
+        }
+        if (directEdge.type === RELATIONSHIP_TYPES.STEP_CHILD) {
+          return {
+            relationship: isFromMe ? (isFemale ? 'STEP_MOTHER' : 'STEP_FATHER') : (isFemale ? 'STEP_DAUGHTER' : 'STEP_SON'),
+            displayName: isFromMe ? (isFemale ? 'Step-Mother' : 'Step-Father') : (isFemale ? 'Stepdaughter' : 'Stepson'),
+            culturalTerm: isFromMe ? (isFemale ? 'Step-Mother' : 'Step-Father') : (isFemale ? 'Stepdaughter' : 'Stepson'),
+            path: ['YOU', target?.name || 'Target'],
+            side: 'NUCLEAR',
+            isBloodRelative: false,
+            isMarriageRelative: true,
           };
         }
       }
@@ -370,11 +459,11 @@ function reduceKinshipAlgebra(meId, targetId, path, people) {
       rel = isFemale ? 'MOTHER_IN_LAW' : 'FATHER_IN_LAW';
       name = isFemale ? 'Mother-in-law' : 'Father-in-law';
       term = isFemale ? 'Mother-in-law (Sasu / Athamma)' : 'Father-in-law (Sasur / Mavayya)';
-    } else if (opStr === '=0' || opStr === '0=' || opStr === '=0' || opStr === '0=') {
+    } else if (opStr === '=0' || opStr === '0=' || opStr === '=+-') {
       rel = isFemale ? 'SISTER_IN_LAW' : 'BROTHER_IN_LAW';
       name = isFemale ? 'Sister-in-law' : 'Brother-in-law';
       term = isFemale ? 'Sister-in-law (Bhabhi / Vadinni / Sali)' : 'Brother-in-law (Bava / Jija / Co-brother / Sala)';
-    } else if (opStr === '=0=' || opStr === '=0=') {
+    } else if (opStr === '=0=' || opStr === '=+--=') {
       rel = isFemale ? 'CO_SISTER' : 'CO_BROTHER';
       name = isFemale ? 'Co-sister' : 'Co-brother';
       term = isFemale ? 'Co-sister (Devrani / Jethani)' : 'Co-brother (Sadhakudu / Sadu)';

@@ -1,8 +1,8 @@
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { useFamilyStore, RELATIONSHIP_TYPES } from '../store/familyStore';
+import { useFamilyStore } from '../store/familyStore';
 import { soundFX } from '../utils/soundEffects';
 import { parseNaturalText } from '../utils/aiGraphParser';
 import './Landing.css';
@@ -212,8 +212,6 @@ export default function Landing() {
   const nodeRefs     = useRef({});
   const edgeRefs     = useRef([]);
   const lastStage    = useRef(-1);
-
-  const targetPath = isOnboarded ? '/app' : '/onboarding';
 
   /* ── Interactive Playground State ─────────────────────────── */
   const [sandboxInput, setSandboxInput] = useState(SANDBOX_PRESETS[0].text);

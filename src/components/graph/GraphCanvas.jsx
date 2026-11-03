@@ -30,7 +30,6 @@ export function GraphCanvas({
   const gRef     = useRef(null);
   const meId     = useFamilyStore((s) => s.meId);
   const people   = useFamilyStore((s) => s.people);
-  const storeEdges = useFamilyStore((s) => s.edges);
   const setNodePos = useFamilyStore((s) => s.setNodePosition);
   const loadShowcaseFamily = useFamilyStore((s) => s.loadShowcaseFamily);
 
@@ -576,7 +575,7 @@ export function GraphCanvas({
                   className="shimmer-btn"
                   onClick={() => {
                     soundFX.playPop();
-                    onAddRelative && onAddRelative(meId || null);
+                    onAddRelative?.(meId || null);
                   }}
                   style={{
                     background: 'var(--accent)',

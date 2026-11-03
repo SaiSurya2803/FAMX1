@@ -25,6 +25,7 @@ class EdgeType:
     MARRIED_TO = "MARRIED_TO"
     ADOPTIVE_PARENT_OF = "ADOPTIVE_PARENT_OF"
     STEP_PARENT_OF = "STEP_PARENT_OF"
+    SIBLING_OF = "SIBLING_OF"
 
 class RelationshipGraph:
     def __init__(self):
@@ -56,6 +57,15 @@ class RelationshipGraph:
         self.adj[spouse1_id].append((spouse2_id, EdgeType.MARRIED_TO, "UNDIRECTED"))
         self.adj[spouse2_id].append((spouse1_id, EdgeType.MARRIED_TO, "UNDIRECTED"))
 
+    def add_sibling(self, person1_id: str, person2_id: str) -> None:
+        if person1_id not in self.people:
+            self.add_person(Person(id=person1_id, name=person1_id))
+        if person2_id not in self.people:
+            self.add_person(Person(id=person2_id, name=person2_id))
+
+        self.adj[person1_id].append((person2_id, EdgeType.SIBLING_OF, "UNDIRECTED"))
+        self.adj[person2_id].append((person1_id, EdgeType.SIBLING_OF, "UNDIRECTED"))
+
     def get_parents(self, person_id: str) -> List[str]:
         if person_id not in self.adj:
             return []
@@ -72,12 +82,15 @@ class RelationshipGraph:
         return [target for target, rel, dir in self.adj[person_id] if rel == EdgeType.MARRIED_TO]
 
     def get_siblings(self, person_id: str) -> List[str]:
-        parents = self.get_parents(person_id)
-        if not parents:
-            return []
         siblings = set()
-        for p in parents:
-            for c in self.get_children(p):
-                if c != person_id:
-                    siblings.add(c)
+        if person_id in self.adj:
+            for target, rel, _ in self.adj[person_id]:
+                if rel == EdgeType.SIBLING_OF:
+                    siblings.add(target)
+        parents = self.get_parents(person_id)
+        if parents:
+            for p in parents:
+                for c in self.get_children(p):
+                    if c != person_id:
+                        siblings.add(c)
         return list(siblings)

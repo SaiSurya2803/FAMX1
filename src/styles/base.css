@@ -20,11 +20,6 @@ body {
   font-weight: var(--weight-regular);
   color: var(--text-primary);
   background-color: var(--bg-base);
-  background-image: 
-    radial-gradient(circle at 50% 30%, rgba(26, 44, 34, 0.65) 0%, rgba(18, 30, 23, 0.95) 70%, rgba(12, 21, 16, 1) 100%),
-    radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.02) 0%, transparent 40%),
-    radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.02) 0%, transparent 40%);
-  background-attachment: fixed;
   line-height: var(--leading-normal);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -32,6 +27,20 @@ body {
   overflow-x: hidden;
   transition: background-color var(--dur-slow) var(--ease-in-out),
               color var(--dur-slow) var(--ease-in-out);
+}
+
+[data-theme="dark"] body {
+  background-image: 
+    radial-gradient(circle at 50% 30%, rgba(26, 44, 34, 0.65) 0%, rgba(18, 30, 23, 0.95) 70%, rgba(12, 21, 16, 1) 100%),
+    radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.02) 0%, transparent 40%),
+    radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.02) 0%, transparent 40%);
+  background-attachment: fixed;
+}
+
+[data-theme="light"] body {
+  background-image: 
+    radial-gradient(circle at 50% 30%, rgba(245, 240, 230, 0.8) 0%, rgba(248, 246, 240, 0.95) 70%, rgba(235, 230, 218, 1) 100%);
+  background-attachment: fixed;
 }
 
 /* Lenis smooth scroll */

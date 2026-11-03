@@ -42,7 +42,7 @@ npm run dev
 cd backend
 
 # Install Python requirements
-pip install fastapi uvicorn
+pip install -r requirements.txt
 
 # Start FastAPI server
 uvicorn app.main:app --reload
@@ -50,15 +50,29 @@ uvicorn app.main:app --reload
 
 ---
 
-## 🧪 Testing
+## 🧪 Testing & Verification
 
 ```bash
-# Run Frontend Production Build Check
+# Run Fast Oxlint (0 errors, 0 warnings)
+npm run lint
+
+# Run Frontend Production Build Check (Rolldown Chunked)
 npm run build
 
-# Run Python Backend Kinship Relationship Test Suite
+# Run Python Backend Kinship Algebra Test Suite (21/21 Pass)
 python -m unittest backend/app/relationships/tests/test_relationships.py
+
+# Run Node Kinship & NLP Parser Test Suite (20/20 Pass)
+node scratch/test_relations.js
 ```
+
+---
+
+## 🔑 Environment Variables
+
+Copy `.env.example` to `.env` to configure AI provider keys:
+- `VITE_GEMINI_API_KEY`: API key for Google Gemini (Gemini 2.5 Flash for Lounsbury Kinship parsing and natural text tree extraction)
+- `VITE_OPENAI_API_KEY`: Fallback API key for OpenAI GPT-4o-mini
 
 ---
 

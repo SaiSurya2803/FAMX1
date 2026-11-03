@@ -1,5 +1,6 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useFamilyStore } from '../../store/familyStore';
+import { deriveRelationship } from '../../utils/relationshipEngine.js';
 import './CommandPalette.css';
 
 function searchPeople(query, people, edges, meId) {
@@ -16,12 +17,17 @@ function searchPeople(query, people, edges, meId) {
 }
 
 function getRelToMe(personId, meId, edges, people) {
-  if (personId === meId) return 'You';
+  if (personId === meId) return 'You (Self)';
+  if (!meId || !people[meId] || !people[personId]) return null;
+  const derived = deriveRelationship(meId, personId, people, edges);
+  if (derived && derived.displayName && derived.displayName !== 'Family Relative' && derived.displayName !== 'Unconnected Relative') {
+    return derived.culturalTerm || derived.displayName;
+  }
   const edge = edges.find(
     (e) => (e.from === personId && e.to === meId) ||
             (e.from === meId && e.to === personId)
   );
-  return edge ? edge.label : null;
+  return edge?.label || derived?.displayName || 'Family Relative';
 }
 
 function getInitials(name) {

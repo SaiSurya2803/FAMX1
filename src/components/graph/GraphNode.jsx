@@ -29,7 +29,7 @@ export function GraphNode({
   onSelect,
   onDragStart,
   onAddRelative,
-  scale = 1,
+  _scale = 1,
 }) {
   const [hovered, setHovered] = useState(false);
   const meId   = useFamilyStore((s) => s.meId);
@@ -39,9 +39,9 @@ export function GraphNode({
   const isMe = node.isMe || node.id === meId;
   const tilt = useMemo(() => (isMe ? 0 : getOrganicTilt(node.id)), [node.id, isMe]);
 
-  // Derive relationship label for polaroid chin (e.g. Grandfather / Kakek, Papa, Mama, Sepupu)
+  // Derive relationship label for polaroid chin (e.g. Grandfather, Father, Mother, Cousin)
   const roleLabel = useMemo(() => {
-    if (isMe) return 'YOU (KAMU)';
+    if (isMe) return 'YOU';
     if (!meId || !people[meId]) return 'Family';
     const derived = deriveRelationship(meId, node.id, people, edges);
     if (!derived) return 'Relative';
@@ -51,7 +51,7 @@ export function GraphNode({
 
   const handleMouseDown = useCallback((e) => {
     e.stopPropagation();
-    onDragStart && onDragStart(node.id, e);
+    onDragStart?.(node.id, e);
   }, [node.id, onDragStart]);
 
   const handleClick = useCallback((e) => {
@@ -62,12 +62,12 @@ export function GraphNode({
 
   const handleDoubleClick = useCallback((e) => {
     e.stopPropagation();
-    onAddRelative && onAddRelative(node.id);
+    onAddRelative?.(node.id);
   }, [node.id, onAddRelative]);
 
   const handleTouchStart = useCallback((e) => {
     e.stopPropagation();
-    onDragStart && onDragStart(node.id, e.touches[0]);
+    onDragStart?.(node.id, e.touches[0]);
   }, [node.id, onDragStart]);
 
   const currentScale = hovered ? 1.08 : (isSelected ? 1.05 : 1);

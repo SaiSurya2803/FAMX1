@@ -5,7 +5,7 @@
  * and extract canonical JSON graph structures.
  */
 
-import { parseNaturalText, sanitizePersonName } from './aiGraphParser';
+import { parseNaturalText, sanitizePersonName } from './aiGraphParser.js';
 
 // Common shorthand dictionary
 const SHORTHAND_DICT = {
@@ -119,9 +119,25 @@ export async function processTextWithAi(rawText, apiKey = '', provider = 'gemini
   });
 }
 
+function extractJsonFromLlmText(text) {
+  if (!text) return null;
+  const firstBrace = text.indexOf('{');
+  const lastBrace = text.lastIndexOf('}');
+  if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
+    const rawJson = text.slice(firstBrace, lastBrace + 1);
+    try {
+      return JSON.parse(rawJson);
+    } catch {
+      // Fallback to regex cleaning
+    }
+  }
+  const cleaned = text.replace(/```json/gi, '').replace(/```/g, '').trim();
+  return JSON.parse(cleaned);
+}
+
 // Call Google Gemini REST API
 async function callGeminiApi(rawText, apiKey) {
-  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+  const endpoint = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent';
 
   const promptText = `
 You are Kinsutra AI, an expert kinship anthropology data parser.
@@ -151,10 +167,14 @@ Return strictly valid JSON with no markdown syntax wrapping, following this sche
 
   const response = await fetch(endpoint, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      'x-goog-api-key': apiKey,
+    },
     body: JSON.stringify({
       contents: [{ parts: [{ text: promptText }] }],
     }),
+    signal: AbortSignal.timeout(15000),
   });
 
   if (!response.ok) {
@@ -163,9 +183,7 @@ Return strictly valid JSON with no markdown syntax wrapping, following this sche
 
   const data = await response.json();
   const rawContent = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
-  const jsonStr = rawContent.replace(/```json/gi, '').replace(/```/g, '').trim();
-
-  return JSON.parse(jsonStr);
+  return extractJsonFromLlmText(rawContent);
 }
 
 // Call OpenAI / Groq / Perplexity REST API
@@ -184,13 +202,14 @@ Return JSON object: { "correctedText": "...", "people": [{ "name": "...", "gende
       Authorization: `Bearer ${apiKey}`,
     },
     body: JSON.stringify({
-      model: 'gpt-3.5-turbo',
+      model: 'gpt-4o-mini',
       messages: [
         { role: 'system', content: systemPrompt },
         { role: 'user', content: rawText },
       ],
       temperature: 0.1,
     }),
+    signal: AbortSignal.timeout(15000),
   });
 
   if (!response.ok) {
@@ -199,7 +218,5 @@ Return JSON object: { "correctedText": "...", "people": [{ "name": "...", "gende
 
   const data = await response.json();
   const rawContent = data.choices?.[0]?.message?.content || '';
-  const jsonStr = rawContent.replace(/```json/gi, '').replace(/```/g, '').trim();
-
-  return JSON.parse(jsonStr);
+  return extractJsonFromLlmText(rawContent);
 }

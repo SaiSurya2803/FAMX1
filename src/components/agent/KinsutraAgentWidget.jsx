@@ -19,8 +19,6 @@ export function KinsutraAgentWidget() {
   const [isProcessing, setIsProcessing] = useState(false);
 
   // Store actions
-  const people = useFamilyStore((s) => s.people);
-  const meId = useFamilyStore((s) => s.meId);
   const addPerson = useFamilyStore((s) => s.addPerson);
   const addEdge = useFamilyStore((s) => s.addEdge);
 
@@ -40,16 +38,11 @@ export function KinsutraAgentWidget() {
       return;
     }
 
-    // Reset stale graph state if building a complete new AI family tree
-    const shouldClear = parsedData.people.length > 2;
-    let nameToId = {};
-    if (shouldClear) {
-      useFamilyStore.setState({ people: {}, edges: [], nodePositions: {}, meId: null });
-    } else {
-      Object.values(useFamilyStore.getState().people).forEach((p) => {
-        nameToId[p.name.trim().toLowerCase()] = p.id;
-      });
-    }
+    // Merge non-destructively into active family network
+    const nameToId = {};
+    Object.values(useFamilyStore.getState().people).forEach((p) => {
+      nameToId[p.name.trim().toLowerCase()] = p.id;
+    });
 
     let newPeopleCount = 0;
     let newEdgeCount = 0;

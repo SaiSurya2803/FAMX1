@@ -49,7 +49,7 @@ class SoundEngine {
 
       osc.start(t);
       osc.stop(t + 0.05);
-    } catch (_) {}
+    } catch {}
   }
 
   // High-frequency bell chime when selecting a relative
@@ -76,7 +76,7 @@ class SoundEngine {
         osc.start(t + i * 0.02);
         osc.stop(t + 0.28);
       });
-    } catch (_) {}
+    } catch {}
   }
 
   // Cinematic swoosh for recentering / camera movement
@@ -102,7 +102,7 @@ class SoundEngine {
 
       osc.start(t);
       osc.stop(t + 0.18);
-    } catch (_) {}
+    } catch {}
   }
 
   // Celebratory ascending chime for AI completion & demo load
@@ -130,7 +130,7 @@ class SoundEngine {
         osc.start(t + idx * 0.07);
         osc.stop(t + idx * 0.07 + 0.36);
       });
-    } catch (_) {}
+    } catch {}
   }
 }
 

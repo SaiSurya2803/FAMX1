@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useFamilyStore } from '../store/familyStore';
+import { deriveRelationship } from '../utils/relationshipEngine.js';
 import './Chat.css';
 
 function getInitials(name) {
@@ -22,10 +23,9 @@ function formatDate(ts) {
 
 export function Chat() {
   const people = useFamilyStore((s) => s.people);
+  const edges = useFamilyStore((s) => s.edges);
   const meId = useFamilyStore((s) => s.meId);
-  const messages = useFamilyStore((s) => s.messages);
   const sendMessage = useFamilyStore((s) => s.sendMessage);
-  const getNeighbors = useFamilyStore((s) => s.getNeighbors);
   const getConversation = useFamilyStore((s) => s.getConversation);
 
   const [activePerson, setActivePerson] = useState(null);
@@ -33,7 +33,18 @@ export function Chat() {
   const [mobileView, setMobileView] = useState('list'); // 'list' | 'chat'
   const bottomRef = useRef(null);
 
-  const neighbors = meId ? getNeighbors(meId) : [];
+  const allMembers = Object.values(people).filter((p) => p.id !== meId);
+  const chatMembers = allMembers.map((person) => {
+    const derived = deriveRelationship(meId, person.id, people, edges);
+    const conv = (meId && person.id) ? getConversation(meId, person.id) : [];
+    const last = conv[conv.length - 1];
+    return {
+      person,
+      relLabel: derived?.culturalTerm || derived?.displayName || 'Family Relative',
+      conv,
+      last,
+    };
+  }).sort((a, b) => (b.last?.timestamp || 0) - (a.last?.timestamp || 0));
 
   const conversation = activePerson && meId
     ? getConversation(meId, activePerson)
@@ -56,8 +67,8 @@ export function Chat() {
   };
 
   const activePersonData = activePerson ? people[activePerson] : null;
-  const activeRel = activePerson
-    ? neighbors.find((n) => n.person?.id === activePerson)?.edge?.label
+  const activeRel = activePerson && meId
+    ? deriveRelationship(meId, activePerson, people, edges)?.culturalTerm || deriveRelationship(meId, activePerson, people, edges)?.displayName
     : null;
 
   return (
@@ -68,43 +79,44 @@ export function Chat() {
           <h1 className="chat-sidebar__title">Messages</h1>
         </div>
 
-        {neighbors.length === 0 ? (
+        {chatMembers.length === 0 ? (
           <div className="chat-sidebar__empty">
             <p>Add family members to start messaging.</p>
           </div>
         ) : (
           <ul className="chat-sidebar__list">
-            {neighbors.map(({ person, edge }) => {
-              if (!person) return null;
-              const conv = getConversation(meId, person.id);
-              const last = conv[conv.length - 1];
-              return (
-                <li
-                  key={person.id}
-                  className={`chat-sidebar__item ${activePerson === person.id ? 'chat-sidebar__item--active' : ''}`}
-                  onClick={() => handleSelectPerson(person.id)}
-                  role="button"
-                  tabIndex={0}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSelectPerson(person.id)}
-                >
-                  <div className="chat-sidebar__avatar">{getInitials(person.name)}</div>
-                  <div className="chat-sidebar__info">
-                    <div className="chat-sidebar__name-row">
-                      <span className="chat-sidebar__name">{person.name}</span>
-                      {last && <span className="chat-sidebar__time">{formatDate(last.timestamp)}</span>}
-                    </div>
-                    <div className="chat-sidebar__sub-row">
-                      <span className="chat-sidebar__rel">{edge.label}</span>
-                      {last && (
-                        <span className="chat-sidebar__preview">
-                          {last.fromId === meId ? 'You: ' : ''}{last.text.slice(0, 30)}{last.text.length > 30 ? '…' : ''}
-                        </span>
-                      )}
-                    </div>
+            {chatMembers.map(({ person, relLabel, last }) => (
+              <li
+                key={person.id}
+                className={`chat-sidebar__item ${activePerson === person.id ? 'chat-sidebar__item--active' : ''}`}
+                onClick={() => handleSelectPerson(person.id)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => e.key === 'Enter' && handleSelectPerson(person.id)}
+              >
+                <div className="chat-sidebar__avatar">
+                  {person.photo ? (
+                    <img src={person.photo} alt={person.name} style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} />
+                  ) : (
+                    getInitials(person.name)
+                  )}
+                </div>
+                <div className="chat-sidebar__info">
+                  <div className="chat-sidebar__name-row">
+                    <span className="chat-sidebar__name">{person.name}</span>
+                    {last && <span className="chat-sidebar__time">{formatDate(last.timestamp)}</span>}
                   </div>
-                </li>
-              );
-            })}
+                  <div className="chat-sidebar__sub-row">
+                    <span className="chat-sidebar__rel">{relLabel}</span>
+                    {last && (
+                      <span className="chat-sidebar__preview">
+                        {last.fromId === meId ? 'You: ' : ''}{last.text.slice(0, 30)}{last.text.length > 30 ? '…' : ''}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </li>
+            ))}
           </ul>
         )}
       </aside>
@@ -124,7 +136,13 @@ export function Chat() {
                   <path d="M10 3L5 8l5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
               </button>
-              <div className="chat-header__avatar">{getInitials(activePersonData.name)}</div>
+              <div className="chat-header__avatar">
+                {activePersonData.photo ? (
+                  <img src={activePersonData.photo} alt={activePersonData.name} style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} />
+                ) : (
+                  getInitials(activePersonData.name)
+                )}
+              </div>
               <div className="chat-header__info">
                 <span className="chat-header__name">{activePersonData.name}</span>
                 {activeRel && <span className="chat-header__rel">{activeRel}</span>}

@@ -4,14 +4,14 @@
  * multi-member rows, relation rows, and freeform natural language.
  */
 
-import { RELATIONSHIP_TYPES } from '../store/familyStore';
+import { RELATIONSHIP_TYPES } from '../store/familyStore.js';
 
 // Helper: Sanitize person names by stripping punctuation, stop words, and extra spaces
 export function sanitizePersonName(str) {
   if (!str) return '';
   let clean = String(str)
     .replace(/['’]s\b/gi, '') // Strip possessive 's first before removing apostrophes
-    .replace(/[\.\,\;\:\!\?\"\'\`\(\)\[\]\{\}\*\/\\]/g, ' ')
+    .replace(/[.,;:!?'`()[\]{}*/\\]/g, ' ')
     .trim();
 
   // Common leading/trailing English stop-word phrases
@@ -123,7 +123,7 @@ export function parseNaturalText(inputText) {
   // Split lines / sentences by newline or semicolon, and clean trailing punctuation
   const lines = inputText
     .split(/[\n;]+/)
-    .map((l) => l.replace(/[\.\,\!]+$/, '').trim())
+    .map((l) => l.replace(/[.,!]+$/, '').trim())
     .filter(Boolean);
 
   lines.forEach((line) => {

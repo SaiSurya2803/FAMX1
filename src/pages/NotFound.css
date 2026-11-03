@@ -1,0 +1,87 @@
+.notfound-page {
+  min-height: calc(100vh - 72px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  background-color: var(--bg-base);
+}
+
+.notfound-card {
+  max-width: 480px;
+  width: 100%;
+  text-align: center;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-base-c);
+  border-radius: var(--radius-xl);
+  padding: 44px 32px;
+  box-shadow: var(--shadow-xl);
+}
+
+.notfound-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+
+.notfound-eyebrow {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--accent);
+  margin-bottom: 8px;
+}
+
+.notfound-title {
+  font-family: var(--font-serif);
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+}
+
+.notfound-sub {
+  font-size: 15px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-bottom: 28px;
+}
+
+.notfound-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.notfound-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 20px;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  font-size: 14px;
+  text-decoration: none;
+  transition: all var(--dur-fast) ease;
+}
+
+.notfound-btn--primary {
+  background: var(--accent);
+  color: #121e17;
+}
+
+.notfound-btn--primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px rgba(253, 224, 71, 0.4);
+}
+
+.notfound-btn--secondary {
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  border: 1px solid var(--border-muted);
+}
+
+.notfound-btn--secondary:hover {
+  background: var(--bg-hover);
+}

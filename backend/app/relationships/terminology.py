@@ -233,6 +233,30 @@ INDIAN_TERMINOLOGY_MAP: Dict[str, Dict[str, str]] = {
     },
 }
 
+def get_regional_term(canonical_rel: str, gender: str = "unknown", lang: str = "generic") -> str:
+    """
+    Returns exact regional term string for a canonical relationship and gender.
+    """
+    rel = canonical_rel.upper() if canonical_rel else "UNKNOWN"
+    g = (gender or "unknown").lower()
+
+    # Map generic/neutral canonicals to gendered variants if gender is known
+    if rel == CanonicalRelationship.CHILD.value:
+        rel = CanonicalRelationship.DAUGHTER.value if g == "female" else CanonicalRelationship.SON.value
+    elif rel == CanonicalRelationship.PARENT.value:
+        rel = CanonicalRelationship.MOTHER.value if g == "female" else CanonicalRelationship.FATHER.value
+    elif rel == CanonicalRelationship.SIBLING.value:
+        rel = CanonicalRelationship.SISTER.value if g == "female" else CanonicalRelationship.BROTHER.value
+    elif rel == CanonicalRelationship.SPOUSE.value:
+        rel = CanonicalRelationship.WIFE.value if g == "female" else CanonicalRelationship.HUSBAND.value
+    elif rel == CanonicalRelationship.GRANDCHILD.value:
+        rel = CanonicalRelationship.GRANDDAUGHTER.value if g == "female" else CanonicalRelationship.GRANDSON.value
+
+    terms = INDIAN_TERMINOLOGY_MAP.get(rel, {})
+    target_lang = (lang or "generic").lower()
+    return terms.get(target_lang, terms.get("generic", rel.title().replace("_", " ")))
+
+
 def translate_relationship(canonical_result: Dict[str, Any], lang: str = "generic") -> Dict[str, Any]:
     """
     Enhances the canonical result with Indian regional terminology display names.

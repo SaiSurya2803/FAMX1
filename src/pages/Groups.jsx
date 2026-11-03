@@ -11,14 +11,13 @@ export function Groups() {
   const people = useFamilyStore((s) => s.people);
   const meId = useFamilyStore((s) => s.meId);
   const createGroup = useFamilyStore((s) => s.createGroup);
-  const getNeighbors = useFamilyStore((s) => s.getNeighbors);
 
   const [showCreate, setShowCreate] = useState(false);
   const [groupName, setGroupName] = useState('');
   const [groupDesc, setGroupDesc] = useState('');
   const [selectedMembers, setSelectedMembers] = useState([]);
 
-  const neighbors = meId ? getNeighbors(meId) : [];
+  const eligibleMembers = Object.values(people).filter((p) => p.id !== meId);
 
   const toggleMember = (id) => {
     setSelectedMembers((prev) =>
@@ -144,11 +143,11 @@ export function Groups() {
                 />
               </div>
 
-              {neighbors.length > 0 && (
+              {eligibleMembers.length > 0 && (
                 <div className="groups-modal__field">
                   <label className="groups-modal__label">Add members</label>
                   <div className="groups-modal__members">
-                    {neighbors.map(({ person }) => {
+                    {eligibleMembers.map((person) => {
                       if (!person) return null;
                       const selected = selectedMembers.includes(person.id);
                       return (
