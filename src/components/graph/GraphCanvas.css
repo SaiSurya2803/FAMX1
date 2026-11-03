@@ -1,30 +1,33 @@
-/* ─── Chalkboard & Memory Board Canvas ────────────────────── */
+/* ─── Modern Infinite Knowledge Graph Canvas ──────────────── */
 .graph-canvas {
   width: 100%;
   height: 100%;
   cursor: grab;
-  /* Deep Slate Chalkboard with Vignette & Chalk Dust */
-  background: 
-    radial-gradient(ellipse at 50% 45%, #2a323d 0%, #1a1f26 70%, #12151b 100%),
-    radial-gradient(circle, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-  background-size: 100% 100%, 28px 28px;
+  /* Deep obsidian/slate canvas with subtle precision dot grid */
+  background-color: var(--bg-base);
+  background-image: 
+    radial-gradient(circle at 50% 50%, rgba(26, 44, 34, 0.4) 0%, rgba(11, 19, 14, 0.95) 100%),
+    radial-gradient(circle, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+  background-size: 100% 100%, 24px 24px;
   background-position: 0 0, 0 0;
   display: block;
   touch-action: none;
   user-select: none;
-  /* Natural Beveled Wood Frame (like real classroom / home chalkboard) */
   box-sizing: border-box;
-  border: 14px solid #b8865b;
-  border-image: linear-gradient(135deg, #d4a373 0%, #b8865b 50%, #8c5b32 100%) 14;
-  box-shadow: inset 0 0 35px rgba(0, 0, 0, 0.8), 0 10px 40px rgba(0, 0, 0, 0.5);
-  transition: all 0.3s ease;
+  border: none;
+  transition: background-color var(--dur-medium) ease;
 }
 
 [data-theme="light"] .graph-canvas {
-  background: 
-    radial-gradient(ellipse at 50% 45%, #333c48 0%, #20262f 70%, #151a21 100%),
-    radial-gradient(circle, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
-  border: 14px solid #c99365;
+  background-color: var(--bg-base);
+  background-image: 
+    radial-gradient(circle at 50% 50%, rgba(243, 239, 230, 0.6) 0%, rgba(249, 248, 244, 0.95) 100%),
+    radial-gradient(circle, rgba(0, 0, 0, 0.06) 1px, transparent 1px);
+  background-size: 100% 100%, 24px 24px;
+}
+
+.graph-canvas:active {
+  cursor: grabbing;
 }
 
 /* ─── Polaroid Card Node Animations & Interactions ───────── */
@@ -40,9 +43,10 @@
   z-index: 100;
 }
 
-/* ─── Chalk Doodles & Typography ──────────────────────────── */
+/* ─── Chalk Doodles & Memory Accents ──────────────────────── */
 .chalkboard-doodles {
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.6));
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.4));
+  opacity: 0.75;
 }
 
 /* ─── Edge animations ─────────────────────────────────────── */

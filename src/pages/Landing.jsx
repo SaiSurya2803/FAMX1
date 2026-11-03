@@ -585,12 +585,12 @@ export default function Landing() {
 
         <div className="lhero-container">
           
-          {/* Left Column: Headline, Genesis Stepper & CTAs */}
-          <div className="lhero-content">
+          {/* Executive Centered Headline & CTAs */}
+          <div className="lhero-intro">
             
             <div className="lhero-status-pill">
               <span className="live-pulse-dot" />
-              <span>LOUNSBURY KINSHIP ALGEBRA 2.0 • GEMINI AI GRAPH</span>
+              <span>LOUNSBURY KINSHIP ALGEBRA 2.0 • ANTHROPOLOGY-BACKED GRAPH ENGINE</span>
             </div>
 
             <h1 className="lhero-main-title">
@@ -646,37 +646,103 @@ export default function Landing() {
               </div>
             </div>
 
-            {/* ── Interactive Genesis Stepper Controller ───────── */}
-            <div className="lhero-stepper-wrap">
-              
-              <div className="lstepper-header">
-                <div className="lstepper-title-row">
-                  <span className="lstepper-pill-tag">{curStageInfo.tag}</span>
-                  <span className="lstepper-title">{curStageInfo.heading}</span>
-                </div>
+          </div>
 
-                <div className="lstepper-controls">
-                  <button
-                    className={`lstepper-play-btn ${isPlaying ? 'lstepper-play-btn--active' : ''}`}
-                    onClick={() => {
-                      soundFX.playPop();
-                      setIsPlaying(!isPlaying);
-                    }}
-                    title={isPlaying ? 'Pause Genesis Evolution' : 'Auto Play Genesis Evolution'}
-                  >
-                    {isPlaying ? '⏸ Pause' : '▶ Play Genesis'}
-                  </button>
-                  <button
-                    className="lstepper-full-btn"
-                    onClick={() => handleSelectStage(7)}
-                    title="View Full 25+ Node Dynasty"
-                  >
-                    Full Dynasty
-                  </button>
-                </div>
+          {/* Interactive Hardware Showcase Viewport */}
+          <div className="lhero-showcase-window">
+            
+            {/* Viewport Topbar Header / HUD */}
+            <div className="lshowcase-topbar">
+              <div className="lshowcase-dots">
+                <span className="lshowcase-dot red" />
+                <span className="lshowcase-dot yellow" />
+                <span className="lshowcase-dot green" />
               </div>
 
-              <p className="lstepper-desc">{curStageInfo.desc}</p>
+              <div className="lshowcase-stage-badge">
+                <span className="lshowcase-stage-pill">{curStageInfo.tag}</span>
+                <span className="lshowcase-stage-name">{curStageInfo.heading}</span>
+              </div>
+
+              {/* Active Inspector HUD */}
+              {activeNode && (
+                <div className="lshowcase-telemetry-pill">
+                  <span className="live-pulse-dot" style={{ width: 6, height: 6 }} />
+                  <span className="ltelemetry-name">{activeNode.name}</span>
+                  <span className="ltelemetry-role">({activeNode.role})</span>
+                  <code className="ltelemetry-code">{activeNode.formula}</code>
+                  <span className="ltelemetry-regional">{activeNode.telugu} · {activeNode.hindi}</span>
+                </div>
+              )}
+
+              <div className="lshowcase-actions">
+                <button
+                  className={`lstepper-play-btn ${isPlaying ? 'lstepper-play-btn--active' : ''}`}
+                  onClick={() => {
+                    soundFX.playPop();
+                    setIsPlaying(!isPlaying);
+                  }}
+                  title={isPlaying ? 'Pause Genesis Evolution' : 'Auto Play Genesis Evolution'}
+                >
+                  {isPlaying ? '⏸ Pause' : '▶ Play Genesis'}
+                </button>
+                <button
+                  className="lstepper-full-btn"
+                  onClick={() => handleSelectStage(7)}
+                  title="View Full 25+ Node Dynasty"
+                >
+                  Full Dynasty
+                </button>
+              </div>
+            </div>
+
+            {/* Center Canvas Viewport */}
+            <div className="lshowcase-canvas-wrap">
+              <HeroGraph
+                currentStage={currentStage}
+                onHoverNode={(node) => setActiveNode(node)}
+                activeNode={activeNode}
+              />
+
+              {/* Active Kinship Floating Telemetry Card */}
+              {activeNode && (
+                <div className="lhero-glass-badge lhero-glass-badge--top float-slow">
+                  <div className="lbadge-header-row">
+                    <span className="live-pulse-dot" style={{ width: 7, height: 7 }} />
+                    <span className="lbadge-tag">{activeNode.role}</span>
+                  </div>
+                  <div className="lbadge-body">
+                    <h4 className="lbadge-person-name">{activeNode.name}</h4>
+                    <p className="lbadge-formula">
+                      Algebra: <code>{activeNode.formula}</code>
+                    </p>
+                    <div className="lbadge-vernacular-row">
+                      <span>Telugu: <strong>{activeNode.telugu}</strong></span>
+                      <span>·</span>
+                      <span>Hindi: <strong>{activeNode.hindi}</strong></span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Lounsbury Mathematical Engine Chip */}
+              <div className="lhero-glass-badge lhero-glass-badge--bottom float-slow" style={{ animationDelay: '1.5s' }}>
+                <span className="lbadge-icon">🧬</span>
+                <div>
+                  <p className="lbadge-title">Lounsbury Reduction 2.0</p>
+                  <p className="lbadge-desc">
+                    Active Stage: <code>{curStageInfo.tag}</code> • 0ms Client Latency
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Bottom Docked Genesis Scrubber */}
+            <div className="lshowcase-bottombar">
+              <div className="lshowcase-bottombar-info">
+                <p className="lstepper-desc">{curStageInfo.desc}</p>
+                <span className="lhero-graph-hint">✦ Hover or click nodes to inspect kinship formulas &amp; regional terms</span>
+              </div>
 
               {/* Stage Pills Scrubber */}
               <div className="lstepper-pills">
@@ -690,55 +756,6 @@ export default function Landing() {
                   </button>
                 ))}
               </div>
-
-            </div>
-
-          </div>
-
-          {/* Right Column: Interactive Living SVG Canvas with Telemetry HUD */}
-          <div className="lhero-graph-wrap">
-            
-            <HeroGraph
-              currentStage={currentStage}
-              onHoverNode={(node) => setActiveNode(node)}
-              activeNode={activeNode}
-            />
-
-            {/* Active Kinship Telemetry Card (Floating Top-Right) */}
-            {activeNode && (
-              <div className="lhero-glass-badge lhero-glass-badge--top float-slow">
-                <div className="lbadge-header-row">
-                  <span className="live-pulse-dot" style={{ width: 7, height: 7 }} />
-                  <span className="lbadge-tag">{activeNode.role}</span>
-                </div>
-                <div className="lbadge-body">
-                  <h4 className="lbadge-person-name">{activeNode.name}</h4>
-                  <p className="lbadge-formula">
-                    Algebra: <code>{activeNode.formula}</code>
-                  </p>
-                  <div className="lbadge-vernacular-row">
-                    <span>Telugu: <strong>{activeNode.telugu}</strong></span>
-                    <span>·</span>
-                    <span>Hindi: <strong>{activeNode.hindi}</strong></span>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Lounsbury Mathematical Engine Chip (Floating Bottom-Left) */}
-            <div className="lhero-glass-badge lhero-glass-badge--bottom float-slow" style={{ animationDelay: '1.5s' }}>
-              <span className="lbadge-icon">🧬</span>
-              <div>
-                <p className="lbadge-title">Lounsbury Reduction 2.0</p>
-                <p className="lbadge-desc">
-                  Active Stage: <code>{curStageInfo.tag}</code> • 0ms Client Latency
-                </p>
-              </div>
-            </div>
-
-            {/* Hint to tap nodes */}
-            <div className="lhero-graph-hint">
-              <span>✦ Hover or tap nodes to inspect kinship formulas &amp; regional terms</span>
             </div>
 
           </div>

@@ -1,42 +1,45 @@
-/* Kinsutra AI Agent Floating Corner Widget Styles */
+/* ════════════════════════════════════════════════════════════
+   KINSUTRA AI AGENT FLOATING DRAWER & COPILOT STYLES
+   Fully theme-aware, responsive, and seamless SaaS integration.
+   ════════════════════════════════════════════════════════════ */
 
 .kagent-trigger {
   position: fixed;
   bottom: 24px;
   right: 24px;
-  z-index: 999;
+  z-index: var(--z-dock, 50);
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 12px 20px;
-  border-radius: 40px;
-  background: var(--surface-card, #ffffff);
-  border: 1px solid var(--border-subtle, rgba(0, 0, 0, 0.08));
-  color: var(--text-primary, #1e293b);
-  font-family: inherit;
-  font-size: 0.9rem;
+  padding: 10px 18px;
+  border-radius: var(--radius-full);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-muted);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
   font-weight: 600;
   cursor: pointer;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.06);
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: var(--shadow-lg), 0 0 20px rgba(0, 0, 0, 0.25);
+  transition: all var(--dur-fast) ease;
 }
 
 .kagent-trigger:hover {
   transform: translateY(-2px);
-  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.16), 0 4px 12px rgba(0, 0, 0, 0.08);
-  border-color: var(--brand-primary, #d97706);
+  border-color: var(--accent);
+  box-shadow: var(--shadow-xl), var(--shadow-glow-accent);
 }
 
 .kagent-trigger__badge {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
+  width: 26px;
+  height: 26px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+  background: var(--accent);
   color: #ffffff;
-  font-size: 0.95rem;
+  font-size: 13px;
   position: relative;
 }
 
@@ -47,175 +50,157 @@
   right: 0;
   bottom: 0;
   border-radius: 50%;
-  background: rgba(217, 119, 6, 0.4);
+  background: rgba(245, 158, 11, 0.4);
   animation: kagent-pulse 2s infinite;
 }
 
 @keyframes kagent-pulse {
-  0% {
-    transform: scale(0.95);
-    opacity: 0.8;
-  }
-  70% {
-    transform: scale(1.4);
-    opacity: 0;
-  }
-  100% {
-    transform: scale(0.95);
-    opacity: 0;
-  }
+  0% { transform: scale(0.95); opacity: 0.8; }
+  70% { transform: scale(1.4); opacity: 0; }
+  100% { transform: scale(0.95); opacity: 0; }
 }
 
-/* Agent Drawer Panel */
+/* ── Agent Drawer Panel ────────────────────────────────────── */
 .kagent-drawer {
   position: fixed;
-  bottom: 84px;
+  bottom: 80px;
   right: 24px;
   width: 420px;
   max-width: calc(100vw - 32px);
-  height: 600px;
-  max-height: calc(100vh - 120px);
-  background: var(--surface-card, #ffffff);
-  border: 1px solid var(--border-subtle, rgba(0, 0, 0, 0.1));
-  border-radius: 20px;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2), 0 4px 16px rgba(0, 0, 0, 0.08);
-  z-index: 1000;
+  height: 580px;
+  max-height: calc(100vh - 110px);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-muted);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-xl), 0 0 40px rgba(0, 0, 0, 0.4);
+  z-index: var(--z-drawer, 150);
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  animation: kagent-slide-up 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: kagent-slide-up 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @keyframes kagent-slide-up {
-  from {
-    opacity: 0;
-    transform: translateY(20px) scale(0.96);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
+  from { opacity: 0; transform: translateY(16px) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 .kagent-drawer__header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 20px;
-  border-bottom: 1px solid var(--border-subtle, rgba(0, 0, 0, 0.08));
-  background: var(--surface-elevated, #f8fafc);
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border-subtle);
+  background: var(--bg-elevated);
 }
 
 .kagent-drawer__title {
   display: flex;
   align-items: center;
   gap: 10px;
-  font-size: 1rem;
+  font-size: var(--text-sm);
   font-weight: 700;
-  color: var(--text-primary, #0f172a);
+  color: var(--text-primary);
 }
 
 .kagent-drawer__close {
   background: transparent;
   border: none;
-  color: var(--text-muted, #64748b);
+  color: var(--text-tertiary);
   cursor: pointer;
   padding: 4px;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s;
+  transition: all var(--dur-fast) ease;
 }
-
 .kagent-drawer__close:hover {
-  background: rgba(0, 0, 0, 0.06);
-  color: var(--text-primary, #0f172a);
+  background: var(--bg-hover);
+  color: var(--text-primary);
 }
 
-/* Tabs */
+/* ── Tabs ──────────────────────────────────────────────────── */
 .kagent-tabs {
   display: flex;
-  border-bottom: 1px solid var(--border-subtle, rgba(0, 0, 0, 0.08));
-  background: var(--surface-card, #ffffff);
+  border-bottom: 1px solid var(--border-subtle);
+  background: var(--bg-surface);
 }
 
 .kagent-tab {
   flex: 1;
-  padding: 12px 8px;
+  padding: 10px 8px;
   background: transparent;
   border: none;
   border-bottom: 2px solid transparent;
   font-family: inherit;
-  font-size: 0.8rem;
+  font-size: var(--text-xs);
   font-weight: 600;
-  color: var(--text-muted, #64748b);
+  color: var(--text-tertiary);
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all var(--dur-fast) ease;
   text-align: center;
 }
-
 .kagent-tab:hover {
-  color: var(--text-primary, #0f172a);
+  color: var(--text-primary);
 }
-
 .kagent-tab--active {
-  color: var(--brand-primary, #d97706);
-  border-bottom-color: var(--brand-primary, #d97706);
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+  background: var(--bg-elevated);
 }
 
-/* Body Container */
+/* ── Body Container ────────────────────────────────────────── */
 .kagent-body {
   flex: 1;
   overflow-y: auto;
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
-  padding: 20px;
+  padding: var(--space-4);
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 14px;
 }
 
 /* Tab 1: Excel Upload */
 .kagent-excel-dropzone {
-  border: 2px dashed var(--border-medium, #cbd5e1);
-  border-radius: 14px;
-  padding: 28px 16px;
+  border: 1.5px dashed var(--border-muted);
+  border-radius: var(--radius-lg);
+  padding: 24px 16px;
   text-align: center;
-  background: var(--surface-elevated, #f8fafc);
+  background: var(--bg-elevated);
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all var(--dur-fast) ease;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
 }
-
 .kagent-excel-dropzone:hover {
-  border-color: var(--brand-primary, #d97706);
-  background: rgba(217, 119, 6, 0.04);
+  border-color: var(--accent);
+  background: var(--accent-muted);
 }
 
 .kagent-excel-dropzone__icon {
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
-  background: rgba(217, 119, 6, 0.1);
-  color: var(--brand-primary, #d97706);
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  background: var(--accent-muted);
+  color: var(--accent);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.4rem;
+  font-size: 1.2rem;
 }
 
 .kagent-btn {
-  padding: 10px 16px;
-  border-radius: 10px;
-  font-family: inherit;
-  font-size: 0.85rem;
+  padding: 9px 16px;
+  border-radius: var(--radius-full);
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all var(--dur-fast) ease;
   border: none;
   display: inline-flex;
   align-items: center;
@@ -224,40 +209,42 @@
 }
 
 .kagent-btn--primary {
-  background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+  background: var(--accent);
   color: #ffffff;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
 }
-
-.kagent-btn--primary:hover {
-  box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3);
-  transform: translateY(-1px);
+.kagent-btn--primary:hover:not(:disabled) {
+  background: var(--accent-bright);
+}
+.kagent-btn--primary:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
 }
 
 .kagent-btn--secondary {
-  background: var(--surface-elevated, #f1f5f9);
-  color: var(--text-primary, #0f172a);
-  border: 1px solid var(--border-subtle, rgba(0, 0, 0, 0.08));
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  border: 1px solid var(--border-subtle);
 }
-
 .kagent-btn--secondary:hover {
-  background: var(--border-subtle, #e2e8f0);
+  background: var(--bg-hover);
 }
 
 /* Tab 2: Interview Wizard */
 .kagent-wizard {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 12px;
 }
 
 .kagent-wizard__bubble {
-  background: var(--surface-elevated, #f1f5f9);
-  border-radius: 14px;
-  padding: 14px 16px;
-  font-size: 0.9rem;
-  color: var(--text-primary, #0f172a);
+  background: var(--bg-elevated);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  font-size: var(--text-xs);
+  color: var(--text-primary);
   line-height: 1.5;
-  border-left: 3px solid var(--brand-primary, #d97706);
+  border-left: 3px solid var(--accent);
 }
 
 .kagent-wizard__options {
@@ -268,47 +255,48 @@
 
 .kagent-wizard__input {
   width: 100%;
-  padding: 10px 14px;
-  border-radius: 10px;
-  border: 1px solid var(--border-medium, #cbd5e1);
-  background: var(--surface-card, #ffffff);
-  color: var(--text-primary, #0f172a);
-  font-family: inherit;
-  font-size: 0.9rem;
+  padding: 9px 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
   box-sizing: border-box;
 }
-
 .kagent-wizard__input:focus {
   outline: none;
-  border-color: var(--brand-primary, #d97706);
+  border-color: var(--accent);
 }
 
 /* Tab 3: Text Command Parser */
 .kagent-textarea {
   width: 100%;
-  height: 120px;
-  padding: 12px 14px;
-  border-radius: 12px;
-  border: 1px solid var(--border-medium, #cbd5e1);
-  background: var(--surface-card, #ffffff);
-  color: var(--text-primary, #0f172a);
-  font-family: inherit;
-  font-size: 0.88rem;
-  line-height: 1.4;
+  height: 110px;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  line-height: 1.5;
   resize: vertical;
   box-sizing: border-box;
 }
-
 .kagent-textarea:focus {
   outline: none;
-  border-color: var(--brand-primary, #d97706);
+  border-color: var(--accent);
+  background: var(--bg-surface);
 }
 
 .kagent-log {
-  font-size: 0.8rem;
-  color: #10b981;
-  background: rgba(16, 185, 129, 0.08);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--chalk-green);
+  background: rgba(16, 185, 129, 0.1);
   padding: 10px 12px;
-  border-radius: 8px;
-  border: 1px solid rgba(16, 185, 129, 0.2);
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  line-height: 1.4;
 }

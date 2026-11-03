@@ -1,50 +1,56 @@
+/* ════════════════════════════════════════════════════════════
+   KINSUTRA AI — 404 NOT FOUND PAGE STYLES
+   ════════════════════════════════════════════════════════════ */
+
 .notfound-page {
-  min-height: calc(100vh - 72px);
+  min-height: calc(100vh - var(--nav-height, 64px));
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 40px 20px;
+  padding: calc(var(--nav-height, 64px) + var(--space-6)) var(--space-6) var(--space-8);
   background-color: var(--bg-base);
 }
 
 .notfound-card {
-  max-width: 480px;
+  max-width: 460px;
   width: 100%;
   text-align: center;
   background: var(--bg-surface);
-  border: 1px solid var(--border-base-c);
+  border: 1px solid var(--border-muted);
   border-radius: var(--radius-xl);
-  padding: 44px 32px;
+  padding: var(--space-10) var(--space-8);
   box-shadow: var(--shadow-xl);
 }
 
 .notfound-icon {
-  font-size: 48px;
-  margin-bottom: 16px;
+  font-size: 44px;
+  margin-bottom: var(--space-4);
 }
 
 .notfound-eyebrow {
-  font-size: 13px;
+  font-family: var(--font-mono);
+  font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.08em;
   color: var(--accent);
-  margin-bottom: 8px;
+  margin-bottom: var(--space-2);
 }
 
 .notfound-title {
-  font-family: var(--font-serif);
-  font-size: 28px;
-  font-weight: 700;
+  font-family: var(--font-heading);
+  font-size: var(--text-2xl);
+  font-weight: 800;
+  letter-spacing: -0.02em;
   color: var(--text-primary);
-  margin-bottom: 12px;
+  margin-bottom: var(--space-3);
 }
 
 .notfound-sub {
-  font-size: 15px;
+  font-size: var(--text-sm);
   color: var(--text-secondary);
-  line-height: 1.5;
-  margin-bottom: 28px;
+  line-height: 1.6;
+  margin-bottom: var(--space-8);
 }
 
 .notfound-actions {
@@ -58,22 +64,23 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 10px 20px;
-  border-radius: var(--radius-md);
+  padding: 10px 22px;
+  border-radius: var(--radius-full);
   font-weight: 600;
-  font-size: 14px;
+  font-size: var(--text-xs);
   text-decoration: none;
   transition: all var(--dur-fast) ease;
 }
 
 .notfound-btn--primary {
   background: var(--accent);
-  color: #121e17;
+  color: #ffffff;
+  box-shadow: 0 2px 10px rgba(245, 158, 11, 0.35);
 }
 
 .notfound-btn--primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 14px rgba(253, 224, 71, 0.4);
+  background: var(--accent-bright);
+  transform: translateY(-1px);
 }
 
 .notfound-btn--secondary {

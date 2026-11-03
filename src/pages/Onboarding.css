@@ -1,12 +1,17 @@
-/* ─── Onboarding ──────────────────────────────────────────── */
+/* ════════════════════════════════════════════════════════════
+   KINSUTRA AI — ONBOARDING EXPERIENCE STYLES
+   Executive initiation flow: elegant, focused and friction-free.
+   ════════════════════════════════════════════════════════════ */
+
 .onboarding {
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: var(--space-6);
+  padding: calc(var(--nav-height, 64px) + var(--space-6)) var(--space-6) var(--space-8);
   position: relative;
   overflow: hidden;
+  background: var(--bg-base);
 }
 
 .onboarding__bg {
@@ -19,9 +24,9 @@
 }
 
 .onboarding__ambient {
-  width: min(600px, 90vw);
+  width: min(700px, 95vw);
   height: auto;
-  animation: ambient-rotate 30s linear infinite;
+  animation: ambient-rotate 40s linear infinite;
 }
 
 @keyframes ambient-rotate {
@@ -29,91 +34,79 @@
   to   { transform: rotate(360deg); }
 }
 
-/* Card — Classroom Blackboard with Oak Trim */
+/* Executive Initiation Card */
 .onboarding__card {
   position: relative;
   z-index: 1;
   width: 100%;
   max-width: 460px;
   background: var(--bg-surface);
-  border: 8px solid var(--wood-frame, #8b5523);
-  border-radius: var(--radius-2xl);
+  border: 1px solid var(--border-muted);
+  border-radius: var(--radius-xl);
   padding: var(--space-8) var(--space-8);
-  box-shadow: 
-    0 20px 50px rgba(0, 0, 0, 0.75),
-    inset 0 0 20px rgba(0, 0, 0, 0.5);
+  box-shadow: var(--shadow-xl), 0 0 50px rgba(0, 0, 0, 0.35);
   text-align: center;
 }
 
 .onboarding__logo {
   margin: 0 auto var(--space-4);
-  width: 52px;
-  height: 52px;
-  border-radius: var(--radius-full);
-  background: rgba(253, 224, 71, 0.15);
-  border: 1.5px dashed var(--chalk-yellow);
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-md);
+  background: var(--accent-muted);
+  border: 1px solid var(--accent-border);
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 0 14px rgba(253, 224, 71, 0.25);
+  box-shadow: 0 0 20px rgba(245, 158, 11, 0.25);
 }
 
 .onboarding__eyebrow {
-  font-family: var(--font-chalk-hand, 'Caveat', cursive);
-  font-size: 16px;
+  font-family: var(--font-mono);
+  font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.08em;
-  color: var(--chalk-yellow);
+  letter-spacing: 0.1em;
+  color: var(--accent);
   text-transform: uppercase;
-  margin-bottom: var(--space-4);
-  text-shadow: 0 0 2px rgba(253, 224, 71, 0.6);
+  margin-bottom: var(--space-2);
 }
 
 .onboarding__welcome-title {
-  font-family: var(--font-chalk-display, 'Fredericka the Great', cursive);
-  font-size: clamp(2rem, 5vw, 2.75rem);
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  line-height: 1.15;
-  color: var(--chalk-white);
-  margin-bottom: var(--space-4);
-  text-shadow: 0 0 3px rgba(255, 255, 255, 0.6);
+  font-family: var(--font-heading);
+  font-size: clamp(26px, 3.2vw, 34px);
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  color: var(--text-primary);
+  line-height: 1.2;
+  margin-bottom: var(--space-3);
 }
+
 .onboarding__welcome-title em {
   font-style: normal;
-  color: var(--chalk-yellow);
-  text-shadow: 0 0 3px rgba(253, 224, 71, 0.7);
+  color: var(--accent);
 }
 
 .onboarding__welcome-sub {
-  font-family: var(--font-sans);
-  font-size: var(--text-md);
+  font-size: var(--text-sm);
   color: var(--text-secondary);
-  line-height: var(--leading-relaxed);
-  margin-bottom: var(--space-8);
-  max-width: 320px;
-  margin-left: auto;
-  margin-right: auto;
+  line-height: 1.6;
 }
 
-.onboarding__form-title {
-  font-family: var(--font-chalk-display, 'Fredericka the Great', cursive);
-  font-size: 2rem;
+.onboarding__step-title {
+  font-family: var(--font-heading);
+  font-size: var(--text-xl);
   font-weight: 700;
-  color: var(--chalk-white);
-  margin-bottom: var(--space-2);
-  text-shadow: 0 0 2px rgba(255, 255, 255, 0.5);
+  color: var(--text-primary);
+  margin-bottom: var(--space-1);
 }
 
-.onboarding__form-sub {
-  font-family: var(--font-sans);
-  font-size: var(--text-base);
-  color: var(--chalk-blue);
+.onboarding__step-sub {
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
   margin-bottom: var(--space-6);
-  text-shadow: 0 0 1px rgba(56, 189, 248, 0.4);
 }
 
-/* Form */
+/* ── Form Fields ───────────────────────────────────────────── */
 .onboarding__form {
   display: flex;
   flex-direction: column;
@@ -121,79 +114,95 @@
   text-align: left;
 }
 
-.onboarding__row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--space-3);
-}
-
 .onboarding__field {
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
+  gap: 6px;
 }
 
 .onboarding__label {
   font-size: var(--text-xs);
-  font-weight: var(--weight-semibold);
-  letter-spacing: var(--tracking-wider);
-  color: var(--text-tertiary);
-  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--text-secondary);
 }
 
 .onboarding__input {
   background: var(--bg-elevated);
-  border: var(--border-thin) solid var(--border-muted);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
-  padding: var(--space-3) var(--space-4);
-  font-size: var(--text-base);
+  padding: 10px 14px;
+  font-size: var(--text-sm);
   font-family: var(--font-sans);
   color: var(--text-primary);
   outline: none;
-  transition: border-color var(--dur-fast) ease, box-shadow var(--dur-fast) ease;
-  width: 100%;
+  transition: all var(--dur-fast) ease;
 }
 .onboarding__input::placeholder { color: var(--text-tertiary); }
 .onboarding__input:focus {
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px var(--accent-muted);
+  background: var(--bg-surface);
+  box-shadow: 0 0 12px rgba(245, 158, 11, 0.15);
 }
 
-.onboarding__select {
-  appearance: none;
+/* ── Gender Selection Buttons ──────────────────────────────── */
+.onboarding__gender-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-2);
+}
+
+.onboarding__gender-btn {
+  padding: 8px;
+  border-radius: var(--radius-md);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  font-family: var(--font-sans);
+  color: var(--text-secondary);
   cursor: pointer;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' stroke='%23888' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 12px center;
-  padding-right: var(--space-8);
+  transition: all var(--dur-fast) ease;
+  text-align: center;
+}
+.onboarding__gender-btn:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+.onboarding__gender-btn--active {
+  background: var(--accent-muted);
+  border-color: var(--accent-border);
+  color: var(--accent);
+  font-weight: 600;
 }
 
-/* Buttons */
+/* ── Action Buttons ────────────────────────────────────────── */
 .onboarding__btn {
+  width: 100%;
+  padding: 12px 20px;
+  border-radius: var(--radius-full);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  transition: all var(--dur-fast) ease;
+  border: none;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--space-2);
-  padding: var(--space-3) var(--space-6);
-  border-radius: var(--radius-md);
-  font-size: var(--text-base);
-  font-weight: var(--weight-semibold);
-  font-family: var(--font-sans);
-  cursor: pointer;
-  transition: opacity var(--dur-fast) ease, transform var(--dur-fast) ease;
-  border: none;
-  width: 100%;
-  margin-top: var(--space-2);
 }
-.onboarding__btn:active { transform: scale(0.97); }
 
 .onboarding__btn--primary {
   background: var(--accent);
-  color: var(--bg-base);
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(245, 158, 11, 0.35);
 }
-.onboarding__btn--primary:hover { opacity: 0.88; }
+.onboarding__btn--primary:hover:not(:disabled) {
+  background: var(--accent-bright);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(245, 158, 11, 0.45);
+}
 .onboarding__btn--primary:disabled {
-  opacity: 0.35;
+  opacity: 0.4;
   cursor: not-allowed;
   transform: none;
 }

@@ -1,5 +1,6 @@
 /* ============================================================
-   FAMILYGRAPH — BASE RESET & GLOBAL STYLES
+   KINSUTRA AI — BASE RESET & GLOBAL STYLES
+   Production-grade SaaS Foundation & Executive Typography.
    ============================================================ */
 
 *, *::before, *::after {
@@ -25,21 +26,21 @@ body {
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
   overflow-x: hidden;
-  transition: background-color var(--dur-slow) var(--ease-in-out),
-              color var(--dur-slow) var(--ease-in-out);
+  transition: background-color var(--dur-medium) var(--ease-in-out),
+              color var(--dur-medium) var(--ease-in-out);
 }
 
 [data-theme="dark"] body {
   background-image: 
-    radial-gradient(circle at 50% 30%, rgba(26, 44, 34, 0.65) 0%, rgba(18, 30, 23, 0.95) 70%, rgba(12, 21, 16, 1) 100%),
-    radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.02) 0%, transparent 40%),
-    radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.02) 0%, transparent 40%);
+    radial-gradient(circle at 50% 0%, rgba(22, 37, 28, 0.55) 0%, rgba(11, 19, 14, 0.98) 75%, rgba(8, 14, 10, 1) 100%),
+    radial-gradient(circle at 15% 50%, rgba(245, 158, 11, 0.03) 0%, transparent 40%),
+    radial-gradient(circle at 85% 70%, rgba(56, 189, 248, 0.03) 0%, transparent 40%);
   background-attachment: fixed;
 }
 
 [data-theme="light"] body {
   background-image: 
-    radial-gradient(circle at 50% 30%, rgba(245, 240, 230, 0.8) 0%, rgba(248, 246, 240, 0.95) 70%, rgba(235, 230, 218, 1) 100%);
+    radial-gradient(circle at 50% 0%, rgba(243, 239, 230, 0.7) 0%, rgba(249, 248, 244, 0.95) 70%, rgba(240, 236, 226, 1) 100%);
   background-attachment: fixed;
 }
 
@@ -56,8 +57,8 @@ html.lenis {
 
 /* ─── Focus styles ─────────────────────────────────────────── */
 :focus-visible {
-  outline: 2px dashed var(--accent);
-  outline-offset: 3px;
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
   border-radius: var(--radius-sm);
 }
 :focus:not(:focus-visible) {
@@ -66,34 +67,44 @@ html.lenis {
 
 /* ─── Selection ────────────────────────────────────────────── */
 ::selection {
-  background: rgba(253, 224, 71, 0.25);
-  color: var(--chalk-yellow);
+  background: rgba(245, 158, 11, 0.25);
+  color: var(--accent-bright);
 }
 
 /* ─── Scrollbar ─────────────────────────────────────────────── */
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: rgba(18, 30, 23, 0.6); }
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: var(--bg-surface); }
 ::-webkit-scrollbar-thumb {
-  background: rgba(253, 224, 71, 0.25);
+  background: var(--border-base-c);
   border-radius: var(--radius-full);
 }
-::-webkit-scrollbar-thumb:hover { background: rgba(253, 224, 71, 0.5); }
+::-webkit-scrollbar-thumb:hover { background: var(--accent); }
 
-/* ─── Typography base (Chalkboard Headings) ─────────────────── */
+/* ─── Typography Base ───────────────────────────────────────── */
 h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-serif);
+  font-family: var(--font-heading);
   font-weight: 700;
   line-height: var(--leading-tight);
-  letter-spacing: var(--tracking-snug);
+  letter-spacing: var(--tracking-tight);
   color: var(--text-primary);
-  text-shadow: 0 0 2px rgba(255, 255, 255, 0.4);
 }
 
-p { line-height: var(--leading-relaxed); }
+h1 { font-size: var(--text-4xl); letter-spacing: var(--tracking-tighter); }
+h2 { font-size: var(--text-3xl); letter-spacing: var(--tracking-tight); }
+h3 { font-size: var(--text-2xl); }
+h4 { font-size: var(--text-xl); }
+h5 { font-size: var(--text-lg); }
+h6 { font-size: var(--text-md); }
+
+p {
+  line-height: var(--leading-relaxed);
+  color: var(--text-secondary);
+}
 
 a {
   color: inherit;
   text-decoration: none;
+  transition: color var(--dur-fast) ease;
 }
 
 img, svg { display: block; }
@@ -105,9 +116,19 @@ button {
   background: none;
 }
 
-input, textarea {
+input, textarea, select {
   font-family: inherit;
   font-size: inherit;
+}
+
+code {
+  font-family: var(--font-mono);
+  font-size: 0.88em;
+  padding: 0.15em 0.4em;
+  border-radius: var(--radius-xs);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  color: var(--accent);
 }
 
 /* ─── Utility classes ────────────────────────────────────────── */
@@ -125,7 +146,7 @@ input, textarea {
 
 .no-scroll { overflow: hidden; }
 
-/* ─── $100M STARTUP ANIMATIONS & UTILITIES ───────────────────── */
+/* ─── Modern SaaS Interactive Utilities ─────────────────────── */
 .gradient-headline {
   background: var(--gradient-gold);
   -webkit-background-clip: text;
@@ -147,6 +168,7 @@ input, textarea {
   background: #10b981;
   box-shadow: 0 0 10px #10b981;
   position: relative;
+  flex-shrink: 0;
 }
 
 .live-pulse-dot::after {
@@ -167,7 +189,7 @@ input, textarea {
 .shimmer-btn {
   position: relative;
   overflow: hidden;
-  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease, background 0.2s ease, border-color 0.2s ease;
 }
 
 .shimmer-btn::before {
@@ -175,27 +197,27 @@ input, textarea {
   position: absolute;
   top: 0;
   left: -100%;
-  width: 60%;
+  width: 50%;
   height: 100%;
   background: linear-gradient(
     90deg,
     transparent 0%,
-    rgba(255, 255, 255, 0.28) 50%,
+    rgba(255, 255, 255, 0.22) 50%,
     transparent 100%
   );
   transform: skewX(-20deg);
-  animation: shimmer-sweep 3.5s infinite;
+  animation: shimmer-sweep 4s infinite;
   pointer-events: none;
 }
 
 @keyframes shimmer-sweep {
   0% { left: -100%; }
-  35%, 100% { left: 200%; }
+  30%, 100% { left: 200%; }
 }
 
 .shimmer-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-glow-accent), 0 8px 24px rgba(0, 0, 0, 0.25);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-glow-accent), 0 8px 24px rgba(0, 0, 0, 0.2);
 }
 
 .shimmer-btn:active {
@@ -208,7 +230,7 @@ input, textarea {
 
 @keyframes float-drift {
   0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-8px); }
+  50% { transform: translateY(-6px); }
 }
 
 /* ─── Reduced motion ─────────────────────────────────────────── */
@@ -221,75 +243,26 @@ input, textarea {
   }
 }
 
-/* ─── Classroom Blackboard & Chalk Palette Utilities ───────── */
-.chalk-font-display {
-  font-family: var(--font-chalk-display) !important;
-}
+/* ─── Semantic Color Utilities ──────────────────────────────── */
+.chalk-font-display { font-family: var(--font-chalk-display) !important; }
+.chalk-font-heading { font-family: var(--font-chalk-heading) !important; }
+.chalk-font-hand    { font-family: var(--font-chalk-hand) !important; }
 
-.chalk-font-heading {
-  font-family: var(--font-chalk-heading) !important;
-}
-
-.chalk-font-hand {
-  font-family: var(--font-chalk-hand) !important;
-}
-
-.chalk-white {
-  color: var(--chalk-white) !important;
-  text-shadow: 0 0 2px rgba(255, 255, 255, 0.7), 0 0 8px rgba(255, 255, 255, 0.25);
-}
-
-.chalk-yellow {
-  color: var(--chalk-yellow) !important;
-  text-shadow: 0 0 2px rgba(253, 224, 71, 0.8), 0 0 10px rgba(253, 224, 71, 0.3);
-}
-
-.chalk-blue {
-  color: var(--chalk-blue) !important;
-  text-shadow: 0 0 2px rgba(56, 189, 248, 0.8), 0 0 10px rgba(56, 189, 248, 0.3);
-}
-
-.chalk-pink {
-  color: var(--chalk-pink) !important;
-  text-shadow: 0 0 2px rgba(244, 114, 182, 0.8), 0 0 10px rgba(244, 114, 182, 0.3);
-}
-
-.chalk-green {
-  color: var(--chalk-green) !important;
-  text-shadow: 0 0 2px rgba(74, 222, 128, 0.8), 0 0 10px rgba(74, 222, 128, 0.3);
-}
-
-.chalk-orange {
-  color: var(--chalk-orange) !important;
-  text-shadow: 0 0 2px rgba(251, 146, 60, 0.8), 0 0 10px rgba(251, 146, 60, 0.3);
-}
-
-.chalk-purple {
-  color: var(--chalk-purple) !important;
-  text-shadow: 0 0 2px rgba(192, 132, 252, 0.8), 0 0 10px rgba(192, 132, 252, 0.3);
-}
-
-.chalk-underline-yellow {
-  border-bottom: 2px dashed var(--chalk-yellow);
-}
-
-.chalk-underline-blue {
-  border-bottom: 2px dashed var(--chalk-blue);
-}
-
-.chalk-underline-pink {
-  border-bottom: 2px dashed var(--chalk-pink);
-}
+.chalk-white  { color: var(--chalk-white) !important; }
+.chalk-yellow { color: var(--chalk-yellow) !important; }
+.chalk-blue   { color: var(--chalk-blue) !important; }
+.chalk-pink   { color: var(--chalk-pink) !important; }
+.chalk-green  { color: var(--chalk-green) !important; }
+.chalk-orange { color: var(--chalk-orange) !important; }
+.chalk-purple { color: var(--chalk-purple) !important; }
 
 .chalk-dashed-box {
-  border: 1.5px dashed rgba(255, 255, 255, 0.28);
+  border: 1px solid var(--border-muted);
   border-radius: var(--radius-lg);
+  background: var(--bg-surface);
 }
 
 .classroom-wood-border {
-  border: 8px solid var(--wood-frame);
-  box-shadow: 
-    inset 0 0 12px rgba(0, 0, 0, 0.8),
-    0 8px 24px rgba(0, 0, 0, 0.6);
+  border: 1px solid var(--border-muted);
+  box-shadow: var(--shadow-lg);
 }
-

@@ -396,8 +396,8 @@ export function GraphCanvas({
                 x="-57" y="-52" width="114" height="85"
                 preserveAspectRatio="xMidYMid slice"
               />
-              <text x="0" y="54" textAnchor="middle" dominantBaseline="central" fill="#0f172a" fontSize="12" fontFamily="var(--font-chalk-hand, 'Caveat', cursive)" fontWeight="700" letterSpacing="0.06em">
-                FOTO KELUARGA 📸
+              <text x="0" y="54" textAnchor="middle" dominantBaseline="central" fill="#0f172a" fontSize="12" fontFamily="var(--font-heading)" fontWeight="700" letterSpacing="0.06em">
+                FAMILY ARCHIVE 📸
               </text>
               <rect x="-22" y="-67" width="44" height="14" rx="1" fill="rgba(254, 240, 138, 0.85)" stroke="rgba(202, 138, 4, 0.4)" strokeWidth="0.8" />
               <circle cx="0" cy="-57" r="7.5" fill="url(#red-pin-grad)" stroke="#991b1b" strokeWidth="0.8" />
@@ -541,33 +541,34 @@ export function GraphCanvas({
           }}>
             <div style={{
               pointerEvents: 'all',
-              background: 'rgba(20, 30, 24, 0.94)',
-              border: '2px dashed var(--chalk-yellow)',
-              borderRadius: 16,
-              padding: '32px 36px',
+              background: 'var(--bg-surface)',
+              border: '1px solid var(--border-muted)',
+              borderRadius: 20,
+              padding: '36px 40px',
               maxWidth: 440,
               textAlign: 'center',
-              boxShadow: '0 20px 40px rgba(0,0,0,0.6)',
-              backdropFilter: 'blur(10px)',
+              boxShadow: 'var(--shadow-xl)',
+              backdropFilter: 'blur(16px)',
             }}>
-              <div style={{ fontSize: 32, marginBottom: 12 }}>🎓 🌳</div>
+              <div style={{ fontSize: 32, marginBottom: 12 }}>🌳</div>
               <h3 style={{
-                fontFamily: "var(--font-chalk-display, 'Fredericka the Great', cursive)",
-                color: 'var(--chalk-yellow)',
-                fontSize: 26,
-                letterSpacing: '0.05em',
-                marginBottom: 10,
+                fontFamily: "var(--font-heading)",
+                color: 'var(--text-primary)',
+                fontSize: 22,
+                fontWeight: 700,
+                letterSpacing: '-0.02em',
+                marginBottom: 8,
               }}>
-                Classroom Blackboard Ready
+                Kinship Graph Canvas
               </h3>
               <p style={{
-                fontFamily: "var(--font-chalk-hand, 'Caveat', cursive)",
-                color: 'var(--chalk-white)',
-                fontSize: 18,
-                lineHeight: 1.4,
+                fontFamily: "var(--font-sans)",
+                color: 'var(--text-secondary)',
+                fontSize: 14,
+                lineHeight: 1.6,
                 marginBottom: 20,
               }}>
-                No family members in this view yet. Start drawing your living kinship story or explore the showcase dynasty!
+                No family members in this view yet. Start building your living family story or explore the showcase dynasty!
               </p>
               <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
                 <button
@@ -579,13 +580,14 @@ export function GraphCanvas({
                   }}
                   style={{
                     background: 'var(--accent)',
-                    color: '#fff',
+                    color: '#ffffff',
                     border: 'none',
-                    borderRadius: 10,
-                    padding: '10px 18px',
-                    fontWeight: 700,
-                    fontSize: 14,
+                    borderRadius: 'var(--radius-full)',
+                    padding: '10px 20px',
+                    fontWeight: 600,
+                    fontSize: 13,
                     cursor: 'pointer',
+                    boxShadow: '0 2px 8px rgba(245, 158, 11, 0.35)',
                   }}
                 >
                   ➕ Add First Relative
@@ -598,13 +600,13 @@ export function GraphCanvas({
                     loadShowcaseFamily();
                   }}
                   style={{
-                    background: 'rgba(255,255,255,0.1)',
-                    color: 'var(--chalk-yellow)',
-                    border: '1px solid var(--chalk-yellow)',
-                    borderRadius: 10,
-                    padding: '10px 18px',
+                    background: 'var(--bg-elevated)',
+                    color: 'var(--text-primary)',
+                    border: '1px solid var(--border-muted)',
+                    borderRadius: 'var(--radius-full)',
+                    padding: '10px 20px',
                     fontWeight: 600,
-                    fontSize: 14,
+                    fontSize: 13,
                     cursor: 'pointer',
                   }}
                 >
